@@ -1,7 +1,7 @@
 import numpy as np
 
 from initializers import UniformInitializer
-from functions import SigmoidFunction
+from functions import LinearFunction
 
 __all__ = ['Layer']
 
@@ -10,10 +10,10 @@ class Layer:
     def __init__(self,
                  input_dimension,
                  output_dimension,
-                 activation_function=SigmoidFunction(),
+                 activation_function=LinearFunction(),
                  weights_initializer=UniformInitializer(),
                  biases_initializer=UniformInitializer()
-                ):
+                 ):
         self._input_dimension = input_dimension
         self._output_dimension = output_dimension
         self._activation_function = activation_function

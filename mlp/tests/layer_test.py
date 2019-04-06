@@ -1,5 +1,4 @@
 from assertion import equals
-from functions import SigmoidFunction
 from initializers import ConstShapeInitializer
 from mlp import Layer
 
@@ -24,8 +23,7 @@ def should_be_success_calculate_output():
             )
         )
     )
-    sigmoid = SigmoidFunction()
-    expected = sigmoid(np.asarray(
+    expected = np.asarray(
         [4., 8, 12.]
-    ))
+    )
     equals(expected, layer([1, 2]))
