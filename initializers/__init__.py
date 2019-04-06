@@ -1,3 +1,4 @@
+from .uniform import UniformInitializer
 from .const import ConstInitializer
 
-__all__ = ['ConstInitializer']
+__all__ = ['UniformInitializer', 'ConstInitializer']
