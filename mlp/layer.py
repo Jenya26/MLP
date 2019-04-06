@@ -20,6 +20,14 @@ class Layer:
         self._weights = weights_initializer((input_dimension, output_dimension))
         self._biases = biases_initializer(output_dimension)
 
+    @property
+    def input_dimension(self):
+        return self._input_dimension
+
+    @property
+    def output_dimension(self):
+        return self._output_dimension
+
     """
     Return true if value is number
 
