@@ -48,4 +48,4 @@ class Gradient:
                 layer_outputs[-1 - i],
                 output_gradient
             )
-        return gradient[::-1]
+        return np.asarray(gradient[::-1])

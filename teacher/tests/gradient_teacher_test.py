@@ -1,13 +1,21 @@
-import numpy as np
-
-from assertion import equals
 from functions import LinearFunction
-from initializers import ConstShapeInitializer
-from mlp import NeuralNetwork, Layer
+from store import Store
 from errors import SquareError
 from gradients import Gradient
+from teacher import GradientTeacher
+from mlp import NeuralNetwork, Layer
+from initializers import UniformInitializer, ConstShapeInitializer
 
-__all__ = ['should_success_calculate_for_multiple_examples']
+import numpy as np
+
+__all__=[
+    'gradient_teacher_test'
+]
+
+
+def function(x):
+    return 2 * x
+
 
 network = NeuralNetwork([
     Layer(
@@ -43,30 +51,16 @@ network = NeuralNetwork([
 ])
 
 
-def should_success_calculate_for_multiple_examples():
-    X = np.asarray([[0.],
-                   [1.]])
-    Y = np.asarray([[0.],
-                   [2.]])
-    gradient = Gradient()
+def gradient_teacher_test():
+    uniform = UniformInitializer(
+        seed=2019
+    )
+    inputs = uniform((5, 1))
+    outputInitializer = ConstShapeInitializer([function(value) for value in inputs])
+    outputs = outputInitializer((5, 1))
+    dataStore = Store(np.concatenate((inputs, outputs), axis=1))
     square_error = SquareError()
-    network_gradient = gradient(network, X, Y, square_error(Y, network(X), 1))
-    expected = np.asarray([
-        [
-            np.asarray([
-                [192.]
-            ]),
-            np.asarray(
-                [336.]
-            )
-        ],
-        [
-            np.asarray([
-                [288.]
-            ]),
-            np.asarray(
-                [112.]
-            )
-        ]
-    ])
-    equals(expected, network_gradient)
+    gradient = Gradient()
+    teacher = GradientTeacher()
+
+    teacher(network, gradient, square_error, dataStore, 1000, 5)
