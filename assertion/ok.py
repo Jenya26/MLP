@@ -1,4 +1,4 @@
-from assertion import equals
+from .equals import equals
 
 __all__ = ['ok']
 

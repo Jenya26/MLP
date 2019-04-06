@@ -1,6 +1,10 @@
 import numpy as np
 
-from assertion import fail
+from .fail import fail
+
+
+def bool_compare(expected, actual, eps=1e-6):
+    return expected == actual
 
 
 def float_compare(expected, actual, eps=1e-6):
@@ -16,6 +20,9 @@ def list_compare_arr(expected, actual, eps=1e-6):
     return result
 
 
+bool_handlers = dict()
+bool_handlers[bool] = bool_compare
+
 float_handlers = dict()
 float_handlers[np.float64] = float_compare
 
@@ -23,8 +30,11 @@ list_handlers = dict()
 list_handlers[np.ndarray] = list_compare_arr
 
 handlers = dict()
+handlers[bool] = bool_handlers
 handlers[float] = float_handlers
+handlers[np.float64] = float_handlers
 handlers[list] = list_handlers
+handlers[np.ndarray] = list_handlers
 
 
 def _equals(expected, actual, eps=1e-6):
