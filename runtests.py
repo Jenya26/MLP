@@ -51,21 +51,30 @@ def run_test_suit(test_path, report):
             all_tests += test_all_tests
     result['value'][0] += ['ok' if status else 'fail']
     result['value'][0] += [f"{passed_tests}/{all_tests}"]
+    result['value'] += '\n'
     report += [result]
     return status, passed_tests, all_tests
 
 
 def run_tests_suit(tests_path, report):
+    group_name = os.path.basename(os.path.dirname(tests_path))
     status = True
     passed_tests = 0
     all_tests = 0
+    result = {
+        'value': [[group_name, '-']],
+        'offset': 2
+    }
     for test_suit_path in os.listdir(tests_path):
         test_suit_path = os.path.abspath(os.path.join(tests_path, test_suit_path))
         if os.path.isfile(test_suit_path):
-            test_suit_status, test_suit_passed_tests, test_suit_all_tests = run_test_suit(test_suit_path, report)
+            test_suit_status, test_suit_passed_tests, test_suit_all_tests = run_test_suit(test_suit_path, result['value'])
             status = status and test_suit_status
             passed_tests += test_suit_passed_tests
             all_tests += test_suit_all_tests
+    result['value'][0] += ['ok' if status else 'fail']
+    result['value'][0] += [f"{passed_tests}/{all_tests}"]
+    report += [result]
     return status, passed_tests, all_tests
 
 
@@ -89,6 +98,9 @@ def find_tests_suit(project_dir, report):
     result['value'][0] += ['ok' if status else 'fail']
     result['value'][0] += [f"{passed_tests}/{all_tests}"]
     report += [result]
+    report += [{
+        'value': f'Tests passed {passed_tests} of {all_tests}'
+    }]
 
 
 default_state = {
