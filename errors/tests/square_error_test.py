@@ -1,8 +1,11 @@
+import numpy as np
+
 from assertion import ok, fail, equals
 from errors import SquareError
 
 __all__ = [
     'should_success_calculate_error',
+    'should_success_calculate_multiple_errors',
     'should_success_calculate_first_derivative',
     'should_success_calculate_second_derivative',
     'should_success_calculate_third_derivative',
@@ -13,6 +16,14 @@ __all__ = [
 def should_success_calculate_error():
     square_error = SquareError()
     equals(100., square_error(10., 20.))
+
+
+def should_success_calculate_multiple_errors():
+    Y = np.asarray([0., 2.])
+    R = np.asarray([12., 18.])
+    E = np.asarray([144., 256.])
+    square_error = SquareError()
+    equals(E, square_error(Y, R))
 
 
 def should_success_calculate_first_derivative():

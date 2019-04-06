@@ -3,6 +3,10 @@ import numpy as np
 from .fail import fail
 
 
+def types_not_comparable(expected, actual, eps=1e-6):
+    return False
+
+
 def bool_compare(expected, actual, eps=1e-6):
     return expected == actual
 
@@ -26,10 +30,12 @@ bool_handlers[bool] = bool_compare
 float_handlers = dict()
 float_handlers[np.float64] = float_compare
 float_handlers[float] = float_compare
+float_handlers[np.ndarray] = types_not_comparable
 
 list_handlers = dict()
 list_handlers[np.ndarray] = list_compare_arr
 list_handlers[list] = list_compare_arr
+list_handlers[float] = types_not_comparable
 
 handlers = dict()
 handlers[bool] = bool_handlers

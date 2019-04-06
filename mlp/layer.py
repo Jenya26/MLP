@@ -28,13 +28,21 @@ class Layer:
     def output_dimension(self):
         return self._output_dimension
 
+    @property
+    def activation_function(self):
+        return self._activation_function
+
+    @property
+    def weights(self):
+        return self._weights
+
     """
     Return true if value is number
 
     """
     @staticmethod
     def _is_number(value):
-        if isinstance(value, int):
+        if isinstance(value, int) or isinstance(value, float):
             return True
         return False
     """

@@ -1,3 +1,5 @@
+import numpy as np
+
 from assertion import equals
 from functions import LinearFunction
 
@@ -11,4 +13,4 @@ def should_calculate_single_input():
 
 def should_calculate_multiple_input():
     linear = LinearFunction()
-    equals([12., 8.], linear([12., 8.]))
+    equals([12., 8.], linear(np.asarray([12., 8.])))
