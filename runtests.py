@@ -40,15 +40,16 @@ def run_test_suit(test_path, report):
         'value': [[test_suit_name, '-']],
         'offset': 2
     }
-    for test_name in test_suit.__all__:
-        if not hasattr(test_suit, test_name):
-            continue
-        test = getattr(test_suit, test_name)
-        if callable(test):
-            test_status, test_passed_tests, test_all_tests = run_test(test_name, test, result['value'])
-            status = status and test_status
-            passed_tests += test_passed_tests
-            all_tests += test_all_tests
+    if hasattr(test_suit, '__all__'):
+        for test_name in test_suit.__all__:
+            if not hasattr(test_suit, test_name):
+                continue
+            test = getattr(test_suit, test_name)
+            if callable(test):
+                test_status, test_passed_tests, test_all_tests = run_test(test_name, test, result['value'])
+                status = status and test_status
+                passed_tests += test_passed_tests
+                all_tests += test_all_tests
     result['value'][0] += ['ok' if status else 'fail']
     result['value'][0] += [f"{passed_tests}/{all_tests}"]
     result['value'] += '\n'
