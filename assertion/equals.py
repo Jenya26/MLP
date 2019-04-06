@@ -25,9 +25,11 @@ bool_handlers[bool] = bool_compare
 
 float_handlers = dict()
 float_handlers[np.float64] = float_compare
+float_handlers[float] = float_compare
 
 list_handlers = dict()
 list_handlers[np.ndarray] = list_compare_arr
+list_handlers[list] = list_compare_arr
 
 handlers = dict()
 handlers[bool] = bool_handlers
@@ -39,12 +41,12 @@ handlers[np.ndarray] = list_handlers
 
 def _equals(expected, actual, eps=1e-6):
     expected_type = type(expected)
-    if expected_type not in handlers:
-        fail(f"Actual handlers for '{expected_type}' not found")
-    actual_handlers = handlers[expected_type]
     actual_type = type(actual)
+    if expected_type not in handlers:
+        fail(f"Handler for ({expected_type}, {actual_type}) not found")
+    actual_handlers = handlers[expected_type]
     if actual_type not in actual_handlers:
-        fail(f"Handler for '{actual_type}' not found")
+        fail(f"Handler for ({expected_type}, {actual_type}) not found")
     return actual_handlers[actual_type](expected, actual, eps)
 
 
