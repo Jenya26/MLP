@@ -17,7 +17,7 @@ class NeuralNetworkWindow(QMainWindow):
     def __init__(self, parent=None):
         super(NeuralNetworkWindow, self).__init__(parent=parent)
         self._chart_widget = ChartWidget()
-        self._chart_widget.draw_line_series(
+        line_series = self._chart_widget.create_line_series(
             np.asarray([
                 [-5., -5.],
                 [-2., -2.],
@@ -26,6 +26,14 @@ class NeuralNetworkWindow(QMainWindow):
                 [5., 5.]
             ]),
             color=Qt.red
+        )
+        self._chart_widget.update_line_series(line_series, np.asarray([
+                [-5., -5.],
+                [-2., -2.],
+                [1., -1.],
+                [2., 2.],
+                [5., 5.]
+            ])
         )
         self.setCentralWidget(self._chart_widget)
 

@@ -30,7 +30,12 @@ class ChartWidget(QChartView):
         super(ChartWidget, self).__init__(self._chart)
         self.setRenderHint(QPainter.Antialiasing)
 
-    def draw_line_series(self, data, color=None):
+    @staticmethod
+    def update_line_series(line_series, data):
+        line_series.clear()
+        line_series.append(series_to_polyline(data))
+
+    def create_line_series(self, data, color=None):
         line_series = QLineSeries()
         pen = line_series.pen()
         if color is not None:
@@ -41,3 +46,4 @@ class ChartWidget(QChartView):
         line_series.append(series_to_polyline(data))
         self._chart.addSeries(line_series)
         self._chart.createDefaultAxes()
+        return line_series
