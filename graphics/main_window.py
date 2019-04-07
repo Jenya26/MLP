@@ -21,7 +21,7 @@ CHART_TITLE = "Neural network"
 class NeuralNetworkWindow(QMainWindow):
     def __init__(self, network_model, parent=None):
         super(NeuralNetworkWindow, self).__init__(parent=parent)
-        self._current_model = 0
+        self._current_model = len(network_model.models) - 1
         self._network_model = network_model
         self._chart_widget = ChartWidget(CHART_TITLE)
         self.setCentralWidget(self._chart_widget)
@@ -35,7 +35,6 @@ class NeuralNetworkWindow(QMainWindow):
         self._network_line_series = self._chart_widget.create_line_series(
             network_values, color=QColor(255, 165, 0)
         )
-        self.update_chart()
         self._model_teaching_controller = ModelTeachingController(self, network_model)
         self._model_teaching_controller.start()
 
@@ -53,10 +52,8 @@ class NeuralNetworkWindow(QMainWindow):
         network_values = np.concatenate((x_original_values, y_network_values), axis=1)
         return original_values, train_values, network_values
 
-    def update_chart(self):
+    def update_network_chart(self):
         original_values, train_values, network_values = self._get_values()
-        self._chart_widget.update_series(self._original_line_series, original_values)
-        self._chart_widget.update_series(self._train_scatter_series, train_values)
         self._chart_widget.update_series(self._network_line_series, network_values)
 
 

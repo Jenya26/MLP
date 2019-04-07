@@ -13,14 +13,22 @@ class ModelTeachingController(QThread):
         self.wait()
 
     def run(self):
-        for i in range(10):
+        for i in range(10000000):
             window = self._window
             current_model = window.current_model
+            learning_rate = current_model.learning_rate
             network = current_model.last_model
             gradient = current_model.gradient
             error = current_model.error
             train_data_store = current_model.train
             teacher = current_model.teacher
-            teacher(network, gradient, error, train_data_store, 1000, 10)
-            window.update_chart()
-
+            teacher(
+                network=network,
+                gradient=gradient,
+                error=error,
+                data_store=train_data_store,
+                max_iterations=10000,
+                batch=10,
+                learning_rate=learning_rate
+            )
+            window.update_network_chart()

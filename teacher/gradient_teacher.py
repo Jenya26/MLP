@@ -4,10 +4,10 @@ __all__ = ['GradientTeacher']
 
 
 class GradientTeacher:
-    def __call__(self, network, gradient, error, dataStore,
+    def __call__(self, network, gradient, error, data_store,
                  max_iterations=1, batch=1, learning_rate=1e-3, finish_criteria=None):
         for iteration in range(max_iterations):
-            data = dataStore.next(batch)
+            data = data_store.next(batch)
             inputs, outputs = np.split(data, 2, axis=1)
             actual = network(inputs)
             outputs_gradient = error(outputs, actual, 1)
