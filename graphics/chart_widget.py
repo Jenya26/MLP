@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt5.QtChart import QChart, QChartView, QLineSeries
+from PyQt5.QtChart import QChart, QChartView, QLineSeries, QScatterSeries
 from PyQt5.QtGui import QPolygonF, QPainter
 
 __all__ = ['ChartWidget']
@@ -24,26 +24,40 @@ def series_to_polyline(data):
 
 
 class ChartWidget(QChartView):
-    def __init__(self):
+    def __init__(self, title):
         self._chart = QChart()
         self._chart.legend().hide()
+        self._chart.setTitle(title)
         super(ChartWidget, self).__init__(self._chart)
         self.setRenderHint(QPainter.Antialiasing)
 
     @staticmethod
-    def update_line_series(line_series, data):
-        line_series.clear()
-        line_series.append(series_to_polyline(data))
+    def update_series(series, data):
+        series.clear()
+        series.append(series_to_polyline(data))
 
     def create_line_series(self, data, color=None):
         line_series = QLineSeries()
         pen = line_series.pen()
         if color is not None:
             pen.setColor(color)
-        pen.setWidthF(.1)
+        pen.setWidthF(5.)
         line_series.setPen(pen)
         line_series.setUseOpenGL(True)
         line_series.append(series_to_polyline(data))
         self._chart.addSeries(line_series)
         self._chart.createDefaultAxes()
         return line_series
+
+    def create_scatter_series(self, data, color=None):
+        scatter_series = QScatterSeries()
+        pen = scatter_series.pen()
+        if color is not None:
+            pen.setColor(color)
+        pen.setWidthF(5.)
+        scatter_series.setPen(pen)
+        scatter_series.setUseOpenGL(True)
+        scatter_series.append(series_to_polyline(data))
+        self._chart.addSeries(scatter_series)
+        self._chart.createDefaultAxes()
+        return scatter_series
