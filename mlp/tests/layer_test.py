@@ -1,4 +1,5 @@
 from assertion import equals
+from functions import LinearFunction
 from initializers import ConstShapeInitializer
 from mlp import Layer
 
@@ -11,6 +12,7 @@ def should_be_success_calculate_output():
     layer = Layer(
         input_dimension=2,
         output_dimension=3,
+        activation_function=LinearFunction(),
         weights_initializer=ConstShapeInitializer(
             np.asarray([
                 [1., 2., 3.],

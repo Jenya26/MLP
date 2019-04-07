@@ -1,6 +1,7 @@
 import numpy as np
 
 from assertion import equals
+from functions import LinearFunction
 from initializers import ConstShapeInitializer
 from mlp import NeuralNetwork, Layer
 
@@ -12,6 +13,7 @@ def should_success_calculate():
         Layer(
             input_dimension=1,
             output_dimension=2,
+            activation_function=LinearFunction(),
             weights_initializer=ConstShapeInitializer(
                 np.asarray([
                     [1., 3.]
@@ -26,6 +28,7 @@ def should_success_calculate():
         Layer(
             input_dimension=2,
             output_dimension=1,
+            activation_function=LinearFunction(),
             weights_initializer=ConstShapeInitializer(
                 np.asarray([
                     [1.],
