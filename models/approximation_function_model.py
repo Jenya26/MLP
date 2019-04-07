@@ -4,6 +4,9 @@ __all__ = ['ApproximationFunctionModel']
 class ApproximationFunctionModel:
     def __init__(self,
                  function,
+                 gradient,
+                 error,
+                 teacher,
                  model,
                  original_store,
                  train_store):
@@ -12,6 +15,21 @@ class ApproximationFunctionModel:
         self._models = [model]
         self._original_store = original_store
         self._train_store = train_store
+        self._gradient = gradient
+        self._error = error
+        self._teacher = teacher
+
+    @property
+    def gradient(self):
+        return self._gradient
+
+    @property
+    def error(self):
+        return self._error
+
+    @property
+    def teacher(self):
+        return self._teacher
 
     @property
     def original(self):

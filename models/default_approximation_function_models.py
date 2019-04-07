@@ -4,6 +4,9 @@ from functions import LinearFunction
 from mlp import NeuralNetwork, Layer
 from initializers import RangeInitializer, UniformInitializer
 from store import Store
+from gradients import Gradient
+from errors import SquareError
+from teacher import GradientTeacher
 from .approximation_function_model import ApproximationFunctionModel
 
 __all__ = ['models']
@@ -26,6 +29,9 @@ def create_model(function):
         function=lambda x: 2 * x,
         original_store=original_store,
         train_store=Store(noise(original_store.next(100))),
+        gradient=Gradient(),
+        error=SquareError(),
+        teacher=GradientTeacher(),
         model=NeuralNetwork([
             Layer(
                 input_dimension=1,
