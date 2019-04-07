@@ -24,8 +24,8 @@ class Gradient:
         activation_function_gradient = output_gradient * layer.activation_function.derivative(inputs, outputs)
         weights_gradient = np.zeros((layer.input_dimension, layer.output_dimension))
         for i in range(inputs.shape[0]):
-            current_input = inputs[i].T
-            current_output = activation_function_gradient[i]
+            current_input = inputs[i].reshape((layer.input_dimension, 1))
+            current_output = activation_function_gradient[i].reshape((1, layer.output_dimension))
             weights_gradient += np.dot(current_input, current_output)
         biases_gradient = np.sum(activation_function_gradient, axis=0)
         gradient += [[
