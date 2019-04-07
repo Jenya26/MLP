@@ -2,11 +2,8 @@ import numpy as np
 
 from functions import LinearFunction
 from mlp import NeuralNetwork, Layer
-from initializers import RangeInitializer, UniformInitializer
+from initializers import RangeInitializer, UniformInitializer, ConstInitializer
 from store import Store
-from gradients import Gradient
-from errors import SquareError
-from teacher import GradientTeacher
 from .approximation_function_model import ApproximationFunctionModel
 
 __all__ = ['models']
@@ -14,24 +11,34 @@ __all__ = ['models']
 ORIGINAL_POINTS_COUNT = 1000
 TRAIN_POINTS_COUNT = 10
 
-range_initializer = RangeInitializer(-10., 10.)
-uniform_initializer = UniformInitializer()
+zero_initializer = ConstInitializer(0.)
+range_initializer = RangeInitializer(-2., 2.)
+uniform_initializer = UniformInitializer(-.1, .1)
 
 
 def noise(values):
-    return values + uniform_initializer(values.shape)
+    x_delta = zero_initializer((values.shape[0], 1))
+    y_delta = uniform_initializer((values.shape[0], 1))
+    delta = np.concatenate((x_delta, y_delta), axis=1)
+    return values + delta
 
 
-def create_model(function):
+def create_model(function, model, learning_rate=1e-3):
     original_inputs = range_initializer((ORIGINAL_POINTS_COUNT, 1))
-    original_store = Store(np.concatenate((original_inputs, function(original_inputs)), axis=1))
+    original_values = np.concatenate((original_inputs, function(original_inputs)), axis=1)
+    original_store = Store(original_values)
     return ApproximationFunctionModel(
-        function=lambda x: 2 * x,
+        function=function,
         original_store=original_store,
-        train_store=Store(noise(original_store.next(100))),
-        gradient=Gradient(),
-        error=SquareError(),
-        teacher=GradientTeacher(),
+        learning_rate=learning_rate,
+        train_store=Store(noise(original_store.next(TRAIN_POINTS_COUNT))),
+        model=model
+    )
+
+
+models = [
+    create_model(
+        function=lambda x: 2 * x,
         model=NeuralNetwork([
             Layer(
                 input_dimension=1,
@@ -41,12 +48,88 @@ def create_model(function):
             Layer(
                 input_dimension=1,
                 output_dimension=1,
-                activation_function=LinearFunction(2.)
+                activation_function=LinearFunction()
             )
         ])
+    ),
+    create_model(
+        function=lambda x: 50 * x,
+        learning_rate=1e-4,
+        model=NeuralNetwork([
+            Layer(
+                input_dimension=1,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            ),
+            Layer(
+                input_dimension=1,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ])
+    ),
+    create_model(
+        function=lambda x: x ** 2,
+        learning_rate=1e-3,
+        model=NeuralNetwork([
+            Layer(1, 3),
+            Layer(
+                input_dimension=3,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ]),
+    ),
+    create_model(
+        function=lambda x: np.cos(2 * np.pi * x),
+        learning_rate=1e-1,
+        model=NeuralNetwork([
+            Layer(1, 5),
+            Layer(5, 5),
+            Layer(
+                input_dimension=5,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ])
+    ),
+    create_model(
+        function=lambda x: x * np.sin(2. * np.pi * x),
+        learning_rate=1e-1,
+        model=NeuralNetwork([
+            Layer(1, 5),
+            Layer(5, 5),
+            Layer(
+                input_dimension=5,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ])
+    ),
+    create_model(
+        function=lambda x: 5 * (x ** 3) + (x ** 2) + 5,
+        model=NeuralNetwork([
+            Layer(1, 5),
+            Layer(5, 5),
+            Layer(
+                input_dimension=5,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ]),
+        learning_rate=1e-3
+    ),
+    create_model(
+        function=lambda x: 5 * (x ** 7) + (x ** 2) + 5,
+        model=NeuralNetwork([
+            Layer(1, 5),
+            Layer(5, 5),
+            Layer(
+                input_dimension=5,
+                output_dimension=1,
+                activation_function=LinearFunction()
+            )
+        ]),
+        learning_rate=1e-4
     )
-
-
-models = [
-    create_model(lambda x: 2 * x)
 ]

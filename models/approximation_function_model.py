@@ -1,15 +1,20 @@
+from gradients import Gradient
+from errors import SquareError
+from teacher import GradientTeacher
+
 __all__ = ['ApproximationFunctionModel']
 
 
 class ApproximationFunctionModel:
     def __init__(self,
                  function,
-                 gradient,
-                 error,
-                 teacher,
                  model,
                  original_store,
-                 train_store):
+                 train_store,
+                 gradient=Gradient(),
+                 error=SquareError(),
+                 teacher=GradientTeacher(),
+                 learning_rate=1e-3):
         self._function = function
         self._base_model = model
         self._models = [model]
@@ -18,6 +23,11 @@ class ApproximationFunctionModel:
         self._gradient = gradient
         self._error = error
         self._teacher = teacher
+        self._learning_rate = learning_rate
+
+    @property
+    def learning_rate(self):
+        return self._learning_rate
 
     @property
     def gradient(self):
