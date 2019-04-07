@@ -1,7 +1,10 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QMainWindow
+import numpy as np
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtCore import Qt
+
+from graphics.chart_widget import ChartWidget
 
 __all__ = ['NeuralNetworkWindow']
 
@@ -13,6 +16,18 @@ WINDOW_TITLE = "Function approximation via neural network"
 class NeuralNetworkWindow(QMainWindow):
     def __init__(self, parent=None):
         super(NeuralNetworkWindow, self).__init__(parent=parent)
+        self._chart_widget = ChartWidget()
+        self._chart_widget.draw_line_series(
+            np.asarray([
+                [-5., -5.],
+                [-2., -2.],
+                [-1., 1.],
+                [2., 2.],
+                [5., 5.]
+            ]),
+            color=Qt.red
+        )
+        self.setCentralWidget(self._chart_widget)
 
 
 if __name__ == '__main__':
