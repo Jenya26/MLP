@@ -67,5 +67,4 @@ class ModelTeachingController(QThread):
             self._iterations -= 1
         window.update_network_chart()
         if self._stop_callback is not None:
-            print(self._stop_callback)
             self._stop_callback(self._iterations)
