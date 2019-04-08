@@ -26,6 +26,12 @@ class ApproximationFunctionModel:
         self._error = error
         self._teacher = teacher
         self._learning_rate = learning_rate
+        self._on_add_model_subscriptions = []
+
+    def subscribe_on_add_model(self, callback):
+        if not callable(callback):
+            raise ValueError('Callback should be callable')
+        self._on_add_model_subscriptions += [callback]
 
     @property
     def function_text(self):
@@ -65,6 +71,8 @@ class ApproximationFunctionModel:
 
     def add_model(self, model):
         self._models += [model]
+        for callback in self._on_add_model_subscriptions:
+            callback(model)
 
     def get_model(self, index):
         if 0 <= index < self.models_count:
