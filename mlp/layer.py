@@ -12,11 +12,12 @@ class Layer:
                  output_dimension,
                  activation_function=SigmoidFunction(),
                  weights_initializer=UniformInitializer(),
-                 biases_initializer=UniformInitializer()
-                 ):
+                 biases_initializer=UniformInitializer()):
         self._input_dimension = input_dimension
         self._output_dimension = output_dimension
         self._activation_function = activation_function
+        self._weights_initializer = weights_initializer
+        self._biases_initializer = biases_initializer
         self._weights = weights_initializer((input_dimension, output_dimension))
         self._biases = biases_initializer(output_dimension)
 
@@ -35,6 +36,18 @@ class Layer:
     @property
     def weights(self):
         return self._weights
+
+    @weights.setter
+    def weights(self, weights):
+        self._weights = weights
+
+    @property
+    def biases(self):
+        return self._biases
+
+    @biases.setter
+    def biases(self, biases):
+        self._biases = biases
 
     @staticmethod
     def _is_number(value):
@@ -91,3 +104,15 @@ class Layer:
         delta_biases = delta[1].reshape(self.output_dimension).astype(bias_type)
         self._weights += delta_weights
         self._biases += delta_biases
+
+    def copy(self):
+        layer = Layer(
+             input_dimension=self._input_dimension,
+             output_dimension=self._output_dimension,
+             activation_function=self._activation_function,
+             weights_initializer=self._weights_initializer,
+             biases_initializer=self._biases_initializer
+        )
+        layer.weights = self._weights
+        layer.biases = self._biases
+        return layer

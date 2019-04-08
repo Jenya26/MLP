@@ -33,3 +33,6 @@ class NeuralNetwork:
             raise ValueError('Count of deltas not equals count of layers')
         for i, layer in enumerate(self.layers):
             layer.update(delta[i])
+
+    def copy(self):
+        return NeuralNetwork([layer.copy() for layer in self._layers])
