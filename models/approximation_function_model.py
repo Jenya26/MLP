@@ -27,6 +27,19 @@ class ApproximationFunctionModel:
         self._teacher = teacher
         self._learning_rate = learning_rate
         self._on_add_model_subscriptions = []
+        self._current_model_index = 0
+
+    @property
+    def current_model(self):
+        return self._models[self._current_model_index]
+
+    @property
+    def current_model_index(self):
+        return self._current_model_index
+
+    @current_model_index.setter
+    def current_model_index(self, current_model_index):
+        self._current_model_index = current_model_index
 
     def subscribe_on_add_model(self, callback):
         if not callable(callback):
