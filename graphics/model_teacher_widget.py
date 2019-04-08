@@ -7,9 +7,8 @@ __all__ = ['ModelTeacherWidget']
 class ModelTeacherWidget(QWidget):
     def __init__(self, network_model, parent=None):
         super(ModelTeacherWidget, self).__init__(parent)
-        self._parent = parent
         self._network_model = network_model
-        self._model_teaching_controller = ModelTeachingController(parent, network_model)
+        self._model_teaching_controller = ModelTeachingController(network_model)
         self._model_teaching_controller.stop_callback = self._stop
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
@@ -20,7 +19,10 @@ class ModelTeacherWidget(QWidget):
         self._teacher_controller_ui = QHBoxLayout()
 
         self._start_button = QPushButton("Start")
+        self._start_button.clicked.connect(self._start)
+
         self._stop_button = QPushButton("Stop")
+        self._stop_button.clicked.connect(self._model_teaching_controller.stop)
 
         self._iterations = 1000000
         self._iterations_line_edit = QLineEdit(str(self._iterations))
@@ -31,8 +33,6 @@ class ModelTeacherWidget(QWidget):
         self._teacher_controller_ui.addWidget(self._start_button)
         self._teacher_controller_ui.addWidget(self._stop_button)
 
-        self._start_button.clicked.connect(self._start)
-        self._stop_button.clicked.connect(self._model_teaching_controller.stop)
         return self._teacher_controller_ui
 
     def _init_teacher_history_ui(self):
@@ -42,7 +42,7 @@ class ModelTeacherWidget(QWidget):
         items = [model.function_text for model in self._network_model.models]
         self._models_list.addItems(items)
         self._models_list.activated[str].connect(self._on_change_model)
-        self._models_list.setCurrentIndex(self._parent.current_mode_index)
+        self._models_list.setCurrentIndex(self._network_model.current_model_index)
 
         self._teacher_history_ui.addWidget(self._models_list)
 
@@ -50,7 +50,7 @@ class ModelTeacherWidget(QWidget):
 
     def _on_change_model(self, text):
         model_index = self._models_list.currentIndex()
-        self._parent.change_current_model(model_index)
+        self._network_model.current_model_index = model_index
 
     def _on_change_iterations(self, text):
         iterations = 0
