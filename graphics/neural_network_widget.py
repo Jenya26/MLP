@@ -26,6 +26,16 @@ class NeuralNetworkWidget(QWidget):
     def current_model(self):
         return self._network_model.models[self._current_model]
 
+    @property
+    def current_mode_index(self):
+        return self._current_model
+
+    def change_current_model(self, index):
+        if index < 0 or index >= len(self._network_model.models):
+            raise ValueError('Index out of range')
+        self._current_model = index
+        self.update_all_charts()
+
     def _get_values(self):
         current_model = self.current_model
         network = current_model.last_model
@@ -47,6 +57,12 @@ class NeuralNetworkWidget(QWidget):
         self._network_line_series = self._chart_widget.create_line_series(
             network_values, color=QColor(255, 165, 0)
         )
+
+    def update_all_charts(self):
+        original_values, train_values, network_values = self._get_values()
+        self._chart_widget.update_series(self._original_line_series, original_values)
+        self._chart_widget.update_series(self._train_scatter_series, train_values)
+        self._chart_widget.update_series(self._network_line_series, network_values)
 
     def update_network_chart(self):
         original_values, train_values, network_values = self._get_values()

@@ -23,12 +23,15 @@ def noise(values):
     return values + delta
 
 
-def create_model(function, model, learning_rate=1e-3):
+def create_model(function_text, model, learning_rate=1e-3):
+    def function(x):
+        return eval(function_text)
     original_inputs = range_initializer((ORIGINAL_POINTS_COUNT, 1))
     original_values = np.concatenate((original_inputs, function(original_inputs)), axis=1)
     original_store = Store(original_values)
     return ApproximationFunctionModel(
         function=function,
+        function_text=function_text,
         original_store=original_store,
         learning_rate=learning_rate,
         train_store=Store(noise(original_store.next(TRAIN_POINTS_COUNT))),
@@ -38,7 +41,7 @@ def create_model(function, model, learning_rate=1e-3):
 
 models = [
     create_model(
-        function=lambda x: 2 * x,
+        function_text="2 * x",
         model=NeuralNetwork([
             Layer(
                 input_dimension=1,
@@ -53,7 +56,7 @@ models = [
         ])
     ),
     create_model(
-        function=lambda x: 50 * x,
+        function_text="50 * x",
         learning_rate=1e-4,
         model=NeuralNetwork([
             Layer(
@@ -69,7 +72,7 @@ models = [
         ])
     ),
     create_model(
-        function=lambda x: x ** 2,
+        function_text="x ** 2",
         learning_rate=1e-3,
         model=NeuralNetwork([
             Layer(1, 3),
@@ -81,7 +84,7 @@ models = [
         ]),
     ),
     create_model(
-        function=lambda x: np.cos(2 * np.pi * x),
+        function_text="np.cos(2 * np.pi * x)",
         learning_rate=1e-1,
         model=NeuralNetwork([
             Layer(1, 5),
@@ -94,7 +97,7 @@ models = [
         ])
     ),
     create_model(
-        function=lambda x: x * np.sin(2. * np.pi * x),
+        function_text="x * np.sin(2. * np.pi * x)",
         learning_rate=1e-1,
         model=NeuralNetwork([
             Layer(1, 5),
@@ -107,7 +110,7 @@ models = [
         ])
     ),
     create_model(
-        function=lambda x: 5 * (x ** 3) + (x ** 2) + 5,
+        function_text="5 * (x ** 3) + (x ** 2) + 5",
         model=NeuralNetwork([
             Layer(1, 5),
             Layer(5, 5),
@@ -120,7 +123,7 @@ models = [
         learning_rate=1e-3
     ),
     create_model(
-        function=lambda x: 5 * (x ** 7) + (x ** 2) + 5,
+        function_text="5 * (x ** 7) + (x ** 2) + 5",
         model=NeuralNetwork([
             Layer(1, 5),
             Layer(5, 5),

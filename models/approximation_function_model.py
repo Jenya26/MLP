@@ -8,6 +8,7 @@ __all__ = ['ApproximationFunctionModel']
 class ApproximationFunctionModel:
     def __init__(self,
                  function,
+                 function_text,
                  model,
                  original_store,
                  train_store,
@@ -15,6 +16,7 @@ class ApproximationFunctionModel:
                  error=SquareError(),
                  teacher=GradientTeacher(),
                  learning_rate=1e-3):
+        self._function_text = function_text
         self._function = function
         self._base_model = model
         self._models = [model]
@@ -24,6 +26,10 @@ class ApproximationFunctionModel:
         self._error = error
         self._teacher = teacher
         self._learning_rate = learning_rate
+
+    @property
+    def function_text(self):
+        return self._function_text
 
     @property
     def learning_rate(self):
