@@ -1,15 +1,12 @@
-import time
 from PyQt5.QtCore import Qt, QThread
 
 __all__ = ['ModelTeachingController']
 
 
 class ModelTeachingController(QThread):
-    def __init__(self, window, network_model, iterations=1, ):
+    def __init__(self, network_model, iterations=1):
         QThread.__init__(self)
-        self._window = window
         self._network_model = network_model
-        self._last_update_time = time.time()
         self._iterations = iterations
         self._stop_callback = None
         self._is_stop = False
@@ -41,8 +38,8 @@ class ModelTeachingController(QThread):
             self._stop_callback = stop_callback
 
     def run(self):
-        window = self._window
-        current_model = window.current_model
+        network_model = self._network_model
+        current_model = network_model.current_model
         learning_rate = current_model.learning_rate
         network = current_model.last_model
         gradient = current_model.gradient
@@ -51,6 +48,7 @@ class ModelTeachingController(QThread):
         teacher = current_model.teacher
         self._is_stop = False
         while self._iterations > 0 and not self._is_stop:
+            network = network.copy()
             teacher(
                 network=network,
                 gradient=gradient,
@@ -60,11 +58,7 @@ class ModelTeachingController(QThread):
                 batch=10,
                 learning_rate=learning_rate
             )
-            current_time = time.time()
-            if current_time - self._last_update_time > .5:
-                window.update_network_chart()
-                self._last_update_time = time.time()
+            current_model.add_model(network)
             self._iterations -= 1
-        window.update_network_chart()
         if self._stop_callback is not None:
             self._stop_callback(self._iterations)
