@@ -113,6 +113,6 @@ class Layer:
              weights_initializer=self._weights_initializer,
              biases_initializer=self._biases_initializer
         )
-        layer.weights = self._weights
-        layer.biases = self._biases
+        layer.weights = np.copy(self._weights)
+        layer.biases = np.copy(self._biases)
         return layer
