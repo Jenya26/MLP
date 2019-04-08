@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox, QSlider
 from graphics.model_teacher_controller import ModelTeachingController
 
 __all__ = ['ModelTeacherWidget']
@@ -8,11 +9,16 @@ class ModelTeacherWidget(QWidget):
     def __init__(self, network_model, parent=None):
         super(ModelTeacherWidget, self).__init__(parent)
         self._network_model = network_model
+        for model in self._network_model.models:
+            model.subscribe_on_add_model(self._on_add_model)
+
         self._model_teaching_controller = ModelTeachingController(network_model)
         self._model_teaching_controller.stop_callback = self._stop
+
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
         container.addLayout(self._init_teacher_history_ui())
+
         self._toggle_active_buttons(False)
 
     def _init_teacher_controller_ui(self):
@@ -44,9 +50,29 @@ class ModelTeacherWidget(QWidget):
         self._models_list.activated[str].connect(self._on_change_model)
         self._models_list.setCurrentIndex(self._network_model.current_model_index)
 
+        self._slider = QSlider(Qt.Horizontal)
+        self._slider.setMinimum(0)
+        self._slider.setMaximum(0)
+        self._slider.setValue(0)
+        self._slider.setTickPosition(QSlider.NoTicks)
+        self._slider.setTickInterval(1)
+        self._slider.valueChanged[int].connect(self._on_change_network)
+
         self._teacher_history_ui.addWidget(self._models_list)
+        self._teacher_history_ui.addWidget(self._slider)
 
         return self._teacher_history_ui
+
+    def _on_change_network(self, value):
+        network_model = self._network_model
+        current_model = network_model.current_model
+        current_model.current_model_index = value
+
+    def _on_add_model(self, model):
+        network_model = self._network_model
+        current_model = network_model.current_model
+        self._slider.setMaximum(current_model.models_count - 1)
+        self._slider.setValue(current_model.models_count - 1)
 
     def _on_change_model(self, text):
         model_index = self._models_list.currentIndex()

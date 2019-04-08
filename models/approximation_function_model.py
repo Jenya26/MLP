@@ -84,6 +84,7 @@ class ApproximationFunctionModel:
 
     def add_model(self, model):
         self._models += [model]
+        self._current_model_index = len(self._models) - 1
         for callback in self._on_add_model_subscriptions:
             callback(model)
 

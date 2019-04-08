@@ -27,9 +27,11 @@ class NeuralNetworkWidget(QWidget):
     def _init_ui(self):
         self._chart_widget = ChartWidget(CHART_TITLE)
         self._model_teacher_widget = ModelTeacherWidget(self._network_model, self)
+
         self._neural_network_layout = QVBoxLayout(self)
         self._neural_network_layout.addWidget(self._chart_widget)
         self._neural_network_layout.addWidget(self._model_teacher_widget)
+
         self._init_charts()
 
     @staticmethod
@@ -58,7 +60,7 @@ class NeuralNetworkWidget(QWidget):
 
     def update_all_charts(self, current_model):
         original_values, train_values, network_values = self._get_values(
-            current_model.last_model, current_model.original.values, current_model.train.values
+            current_model.current_model, current_model.original.values, current_model.train.values
         )
         self._chart_widget.update_series(self._original_line_series, original_values)
         self._chart_widget.update_series(self._train_scatter_series, train_values)
@@ -70,6 +72,6 @@ class NeuralNetworkWidget(QWidget):
         network_model = self._network_model
         current_model = network_model.current_model
         original_values, train_values, network_values = self._get_values(
-            current_model.last_model, current_model.original.values, current_model.train.values
+            current_model.current_model, current_model.original.values, current_model.train.values
         )
         self._chart_widget.update_series(self._network_line_series, network_values)

@@ -41,7 +41,7 @@ class ModelTeachingController(QThread):
         network_model = self._network_model
         current_model = network_model.current_model
         learning_rate = current_model.learning_rate
-        network = current_model.last_model
+        network = current_model.current_model
         gradient = current_model.gradient
         error = current_model.error
         train_data_store = current_model.train

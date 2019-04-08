@@ -15,7 +15,6 @@ class ChartWidget(QChartView):
         self._chart.setTitle(title)
         super(ChartWidget, self).__init__(self._chart)
         self.setRenderHint(QPainter.Antialiasing)
-        # self._y_axes = QValueAxis()
 
     @staticmethod
     def _series_to_polyline(xdata, ydata):
