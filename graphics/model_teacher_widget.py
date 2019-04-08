@@ -14,7 +14,7 @@ class ModelTeacherWidget(QWidget):
         self._start_button = QPushButton("Start", self)
         self._stop_button = QPushButton("Stop", self)
 
-        self._iterations = 10000
+        self._iterations = 1000000
         self._iterations_line_edit = QLineEdit(str(self._iterations), self)
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)
