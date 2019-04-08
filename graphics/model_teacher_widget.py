@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit, QComboBox
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox
 from graphics.model_teacher_controller import ModelTeachingController
 
 __all__ = ['ModelTeacherWidget']
@@ -8,9 +8,16 @@ class ModelTeacherWidget(QWidget):
     def __init__(self, network_model, parent=None):
         super(ModelTeacherWidget, self).__init__(parent)
         self._parent = parent
+        self._network_model = network_model
         self._model_teaching_controller = ModelTeachingController(parent, network_model)
         self._model_teaching_controller.stop_callback = self._stop
-        self._model_teacher_layout = QHBoxLayout(self)
+        container = QVBoxLayout(self)
+        container.addLayout(self._init_teacher_controller_ui())
+        container.addLayout(self._init_teacher_history_ui())
+        self._toggle_active_buttons(False)
+
+    def _init_teacher_controller_ui(self):
+        self._teacher_controller_ui = QHBoxLayout()
 
         self._start_button = QPushButton("Start")
         self._stop_button = QPushButton("Stop")
@@ -20,21 +27,26 @@ class ModelTeacherWidget(QWidget):
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)
 
+        self._teacher_controller_ui.addWidget(self._iterations_line_edit)
+        self._teacher_controller_ui.addWidget(self._start_button)
+        self._teacher_controller_ui.addWidget(self._stop_button)
+
+        self._start_button.clicked.connect(self._start)
+        self._stop_button.clicked.connect(self._model_teaching_controller.stop)
+        return self._teacher_controller_ui
+
+    def _init_teacher_history_ui(self):
+        self._teacher_history_ui = QHBoxLayout()
+
         self._models_list = QComboBox()
-        items = [model.function_text for model in network_model.models]
+        items = [model.function_text for model in self._network_model.models]
         self._models_list.addItems(items)
         self._models_list.activated[str].connect(self._on_change_model)
         self._models_list.setCurrentIndex(self._parent.current_mode_index)
 
-        self._model_teacher_layout.addWidget(self._models_list)
-        self._model_teacher_layout.addWidget(self._iterations_line_edit)
-        self._model_teacher_layout.addWidget(self._start_button)
-        self._model_teacher_layout.addWidget(self._stop_button)
+        self._teacher_history_ui.addWidget(self._models_list)
 
-        self._start_button.clicked.connect(self._start)
-        self._stop_button.clicked.connect(self._model_teaching_controller.stop)
-
-        self._toggle_active_buttons(False)
+        return self._teacher_history_ui
 
     def _on_change_model(self, text):
         model_index = self._models_list.currentIndex()
