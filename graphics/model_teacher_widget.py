@@ -58,10 +58,17 @@ class ModelTeacherWidget(QWidget):
         self._slider.setTickInterval(1)
         self._slider.valueChanged[int].connect(self._on_change_network)
 
+        self._reset_button = QPushButton("Reset")
+        self._reset_button.clicked.connect(self._reset)
+
         self._teacher_history_ui.addWidget(self._models_list)
         self._teacher_history_ui.addWidget(self._slider)
+        self._teacher_history_ui.addWidget(self._reset_button)
 
         return self._teacher_history_ui
+
+    def _reset(self):
+        self._network_model.current_model.current_model.reset()
 
     def _on_change_network(self, value):
         network_model = self._network_model
@@ -87,6 +94,7 @@ class ModelTeacherWidget(QWidget):
         self._iterations_line_edit.setText(str(iterations))
 
     def _toggle_active_buttons(self, is_teaching):
+        self._reset_button.setEnabled(not is_teaching)
         self._models_list.setEnabled(not is_teaching)
         self._stop_button.setEnabled(is_teaching)
         self._start_button.setEnabled(not is_teaching)

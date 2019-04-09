@@ -36,3 +36,7 @@ class NeuralNetwork:
 
     def copy(self):
         return NeuralNetwork([layer.copy() for layer in self._layers])
+
+    def reset(self):
+        for layer in self._layers:
+            layer.reset()

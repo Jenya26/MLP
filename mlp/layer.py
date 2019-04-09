@@ -18,8 +18,9 @@ class Layer:
         self._activation_function = activation_function
         self._weights_initializer = weights_initializer
         self._biases_initializer = biases_initializer
-        self._weights = weights_initializer((input_dimension, output_dimension))
-        self._biases = biases_initializer(output_dimension)
+        self._weights = None
+        self._biases = None
+        self.reset()
 
     @property
     def input_dimension(self):
@@ -116,3 +117,7 @@ class Layer:
         layer.weights = np.copy(self._weights)
         layer.biases = np.copy(self._biases)
         return layer
+
+    def reset(self):
+        self._weights = self._weights_initializer((self._input_dimension, self._output_dimension))
+        self._biases = self._biases_initializer(self._output_dimension)
