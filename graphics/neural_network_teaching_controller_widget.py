@@ -12,8 +12,16 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         for model in self._network_model.models:
             model.subscribe_on_add_model(self._on_add_model)
 
-        self._model_teaching_controller = NeuralNetworkTeachingService(network_model)
+        current_model = network_model.current_model
+        self._model_teaching_controller = NeuralNetworkTeachingService(
+             current_model.current_model,
+             current_model.teacher,
+             current_model.gradient,
+             current_model.error,
+             current_model.train
+        )
         self._model_teaching_controller.stop_callback = self._stop
+        self._model_teaching_controller._on_update_model = self._on_update_model
 
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
@@ -67,6 +75,11 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
 
         return self._teacher_history_ui
 
+    def _on_update_model(self, network):
+        network_model = self._network_model
+        current_model = network_model.current_model
+        current_model.add_model(network)
+
     def _reset(self):
         self._network_model.current_model.current_model.reset()
 
@@ -82,8 +95,11 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._slider.setValue(current_model.models_count - 1)
 
     def _on_change_model(self, text):
+        network_model = self._network_model
         model_index = self._models_list.currentIndex()
-        self._network_model.current_model_index = model_index
+        network_model.current_model_index = model_index
+        current_model = network_model.current_model
+        self._model_teaching_controller.network = current_model.current_model
 
     def _on_change_iterations(self, text):
         iterations = 0
