@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QColor
 
-from graphics.chart_widget import ChartWidget
+from graphics.neural_network_chart_widget import NeuralNetworkChartWidget
 from graphics.model_teacher_widget import ModelTeacherWidget
 
 __all__ = ['NeuralNetworkWidget']
@@ -25,7 +25,7 @@ class NeuralNetworkWidget(QWidget):
         self._timer.start()
 
     def _init_ui(self):
-        self._chart_widget = ChartWidget(CHART_TITLE)
+        self._chart_widget = NeuralNetworkChartWidget(CHART_TITLE)
         self._model_teacher_widget = ModelTeacherWidget(self._network_model, self)
 
         self._neural_network_layout = QVBoxLayout(self)
@@ -47,31 +47,20 @@ class NeuralNetworkWidget(QWidget):
         original_values, train_values, network_values = self._get_values(
             current_model.last_model, current_model.original.values, current_model.train.values
         )
-        self._original_line_series = self._chart_widget.create_line_series(
-            original_values, color=Qt.green
-        )
-        self._train_scatter_series = self._chart_widget.create_scatter_series(
-            train_values, color=QColor(255, 0, 0)
-        )
-        self._network_line_series = self._chart_widget.create_line_series(
-            network_values, color=QColor(255, 165, 0)
-        )
-        self._chart_widget.update_axes(self._original_line_series, original_values)
+        self._chart_widget.original_function = current_model.function
+        self._chart_widget.train_points = train_values
+        self._chart_widget.original_function = current_model.current_model
 
     def update_all_charts(self, current_model):
         original_values, train_values, network_values = self._get_values(
             current_model.current_model, current_model.original.values, current_model.train.values
         )
-        self._chart_widget.update_series(self._original_line_series, original_values)
-        self._chart_widget.update_series(self._train_scatter_series, train_values)
-        self._chart_widget.update_series(self._network_line_series, network_values)
-        self._chart_widget.update_axes(self._original_line_series, original_values)
+        self._chart_widget.original_function = current_model.function
+        self._chart_widget.network_model = current_model.current_model
+        self._chart_widget.train_points = train_values
 
     @pyqtSlot()
     def update_network_chart(self):
         network_model = self._network_model
         current_model = network_model.current_model
-        original_values, train_values, network_values = self._get_values(
-            current_model.current_model, current_model.original.values, current_model.train.values
-        )
-        self._chart_widget.update_series(self._network_line_series, network_values)
+        self._chart_widget.network_model = current_model.current_model
