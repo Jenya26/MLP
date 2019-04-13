@@ -8,6 +8,22 @@ class RangeInitializer:
         self._start = start
         self._stop = stop
 
+    @property
+    def start(self):
+        return self._start
+
+    @start.setter
+    def start(self, start):
+        self._start = start
+
+    @property
+    def stop(self):
+        return self._stop
+
+    @stop.setter
+    def stop(self, stop):
+        self._stop = stop
+
     def _get_range(self, shape):
         if isinstance(shape, tuple):
             result = []
