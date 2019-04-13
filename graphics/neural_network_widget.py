@@ -9,7 +9,7 @@ from graphics.model_teacher_widget import ModelTeacherWidget
 __all__ = ['NeuralNetworkWidget']
 
 CHART_TITLE = "Neural network"
-CHART_UPDATE_INTERVAL = 100
+CHART_UPDATE_INTERVAL = 200
 
 
 class NeuralNetworkWidget(QWidget):

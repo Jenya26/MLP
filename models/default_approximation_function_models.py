@@ -1,7 +1,7 @@
 import numpy as np
 
 from functions import LinearFunction
-from mlp import NeuralNetwork, Layer
+from mlp import MultipleLayersModel, Layer
 from initializers import RangeInitializer, UniformInitializer, ConstInitializer
 from store import Store
 from .approximation_function_model import ApproximationFunctionModel
@@ -42,7 +42,7 @@ def create_model(function_text, model, learning_rate=1e-3):
 models = [
     create_model(
         function_text="2 * x",
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(
                 input_dimension=1,
                 output_dimension=1,
@@ -58,7 +58,7 @@ models = [
     create_model(
         function_text="50 * x",
         learning_rate=1e-4,
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(
                 input_dimension=1,
                 output_dimension=1,
@@ -74,7 +74,7 @@ models = [
     create_model(
         function_text="x ** 2",
         learning_rate=1e-3,
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(1, 3),
             Layer(
                 input_dimension=3,
@@ -86,7 +86,7 @@ models = [
     create_model(
         function_text="np.cos(2 * np.pi * x)",
         learning_rate=1e-1,
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(1, 5),
             Layer(5, 5),
             Layer(
@@ -99,7 +99,7 @@ models = [
     create_model(
         function_text="x * np.sin(2. * np.pi * x)",
         learning_rate=1e-1,
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(1, 5),
             Layer(5, 5),
             Layer(
@@ -111,7 +111,7 @@ models = [
     ),
     create_model(
         function_text="5 * (x ** 3) + (x ** 2) + 5",
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(1, 5),
             Layer(5, 5),
             Layer(
@@ -124,7 +124,7 @@ models = [
     ),
     create_model(
         function_text="5 * (x ** 7) + (x ** 2) + 5",
-        model=NeuralNetwork([
+        model=MultipleLayersModel([
             Layer(1, 5),
             Layer(5, 5),
             Layer(

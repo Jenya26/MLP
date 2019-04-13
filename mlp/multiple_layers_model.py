@@ -1,9 +1,9 @@
 import numpy as np
 
-__all__ = ['NeuralNetwork']
+__all__ = ['MultipleLayersModel']
 
 
-class NeuralNetwork:
+class MultipleLayersModel:
     def __init__(self, layers):
         if len(layers) <= 0:
             raise ValueError('Layers should be more or equals one')
@@ -35,7 +35,7 @@ class NeuralNetwork:
             layer.update(delta[i])
 
     def copy(self):
-        return NeuralNetwork([layer.copy() for layer in self._layers])
+        return MultipleLayersModel([layer.copy() for layer in self._layers])
 
     def reset(self):
         for layer in self._layers:

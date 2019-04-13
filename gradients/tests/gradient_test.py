@@ -3,7 +3,7 @@ import numpy as np
 from assertion import equals
 from functions import LinearFunction
 from initializers import ConstShapeInitializer
-from mlp import NeuralNetwork, Layer
+from mlp import MultipleLayersModel, Layer
 from errors import SquareError
 from gradients import Gradient
 
@@ -14,7 +14,7 @@ __all__ = [
 
 
 def should_success_calculate_for_multiple_examples():
-    network = NeuralNetwork([
+    network = MultipleLayersModel([
         Layer(
             input_dimension=1,
             output_dimension=1,
@@ -75,7 +75,7 @@ def should_success_calculate_for_multiple_examples():
 
 
 def should_success_calculate_for_multiple_neurons():
-    network = NeuralNetwork([
+    network = MultipleLayersModel([
         Layer(
             input_dimension=1,
             output_dimension=3,

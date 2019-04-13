@@ -3,7 +3,7 @@ from store import Store
 from errors import SquareError
 from gradients import Gradient
 from teacher import GradientTeacher
-from mlp import NeuralNetwork, Layer
+from mlp import MultipleLayersModel, Layer
 from initializers import UniformInitializer, ConstShapeInitializer
 
 import numpy as np
@@ -17,7 +17,7 @@ def function(x):
     return 2 * x
 
 
-network = NeuralNetwork([
+network = MultipleLayersModel([
     Layer(
         input_dimension=1,
         output_dimension=1,

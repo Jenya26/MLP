@@ -1,4 +1,4 @@
 from .layer import Layer
-from .neural_network import NeuralNetwork
+from .multiple_layers_model import MultipleLayersModel
 
-__all__ = ['Layer', 'NeuralNetwork']
+__all__ = ['Layer', 'MultipleLayersModel']

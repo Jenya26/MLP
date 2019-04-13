@@ -3,13 +3,13 @@ import numpy as np
 from assertion import equals
 from functions import LinearFunction
 from initializers import ConstShapeInitializer
-from mlp import NeuralNetwork, Layer
+from mlp import MultipleLayersModel, Layer
 
 __all__ = ['should_success_calculate']
 
 
 def should_success_calculate():
-    network = NeuralNetwork([
+    network = MultipleLayersModel([
         Layer(
             input_dimension=1,
             output_dimension=2,
