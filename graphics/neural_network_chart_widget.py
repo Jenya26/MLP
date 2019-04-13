@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtChart import QChart, QChartView, QLineSeries, QScatterSeries, QValueAxis
 from PyQt5.QtGui import QPolygonF, QPainter
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
 from initializers import RangeInitializer

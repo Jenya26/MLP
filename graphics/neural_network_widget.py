@@ -1,10 +1,9 @@
 import numpy as np
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QTimer, pyqtSlot
 
 from graphics.neural_network_chart_widget import NeuralNetworkChartWidget
-from graphics.model_teacher_widget import ModelTeacherWidget
+from graphics.neural_network_teaching_controller_widget import NeuralNetworkTeachingControllerWidget
 
 __all__ = ['NeuralNetworkWidget']
 
@@ -26,7 +25,7 @@ class NeuralNetworkWidget(QWidget):
 
     def _init_ui(self):
         self._chart_widget = NeuralNetworkChartWidget(CHART_TITLE)
-        self._model_teacher_widget = ModelTeacherWidget(self._network_model, self)
+        self._model_teacher_widget = NeuralNetworkTeachingControllerWidget(self._network_model, self)
 
         self._neural_network_layout = QVBoxLayout(self)
         self._neural_network_layout.addWidget(self._chart_widget)
@@ -49,15 +48,15 @@ class NeuralNetworkWidget(QWidget):
         )
         self._chart_widget.original_function = current_model.function
         self._chart_widget.train_points = train_values
-        self._chart_widget.original_function = current_model.current_model
+        self._chart_widget.network_model = current_model.current_model
 
     def update_all_charts(self, current_model):
         original_values, train_values, network_values = self._get_values(
             current_model.current_model, current_model.original.values, current_model.train.values
         )
         self._chart_widget.original_function = current_model.function
-        self._chart_widget.network_model = current_model.current_model
         self._chart_widget.train_points = train_values
+        self._chart_widget.network_model = current_model.current_model
 
     @pyqtSlot()
     def update_network_chart(self):

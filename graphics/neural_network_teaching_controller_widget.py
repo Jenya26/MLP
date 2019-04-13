@@ -2,12 +2,12 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox, QSlider
 from graphics.model_teacher_controller import ModelTeachingController
 
-__all__ = ['ModelTeacherWidget']
+__all__ = ['NeuralNetworkTeachingControllerWidget']
 
 
-class ModelTeacherWidget(QWidget):
+class NeuralNetworkTeachingControllerWidget(QWidget):
     def __init__(self, network_model, parent=None):
-        super(ModelTeacherWidget, self).__init__(parent)
+        super(NeuralNetworkTeachingControllerWidget, self).__init__(parent)
         self._network_model = network_model
         for model in self._network_model.models:
             model.subscribe_on_add_model(self._on_add_model)
