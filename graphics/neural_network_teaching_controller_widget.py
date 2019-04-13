@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox, QSlider
-from graphics.model_teacher_controller import ModelTeachingController
+from graphics.neural_network_teaching_service import NeuralNetworkTeachingService
 
 __all__ = ['NeuralNetworkTeachingControllerWidget']
 
@@ -12,7 +12,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         for model in self._network_model.models:
             model.subscribe_on_add_model(self._on_add_model)
 
-        self._model_teaching_controller = ModelTeachingController(network_model)
+        self._model_teaching_controller = NeuralNetworkTeachingService(network_model)
         self._model_teaching_controller.stop_callback = self._stop
 
         container = QVBoxLayout(self)

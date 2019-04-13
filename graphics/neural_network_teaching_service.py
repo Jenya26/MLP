@@ -1,9 +1,9 @@
 from PyQt5.QtCore import Qt, QThread
 
-__all__ = ['ModelTeachingController']
+__all__ = ['NeuralNetworkTeachingService']
 
 
-class ModelTeachingController(QThread):
+class NeuralNetworkTeachingService(QThread):
     def __init__(self, network_model, iterations=1):
         QThread.__init__(self)
         self._network_model = network_model
