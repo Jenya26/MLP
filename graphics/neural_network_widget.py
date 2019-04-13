@@ -25,13 +25,25 @@ class NeuralNetworkWidget(QWidget):
 
     def _init_ui(self):
         self._chart_widget = NeuralNetworkChartWidget(CHART_TITLE)
-        self._model_teacher_widget = NeuralNetworkTeachingControllerWidget(self._network_model, self)
+        current_model = self._network_model.current_model
+        self._model_teacher_widget = NeuralNetworkTeachingControllerWidget(
+             current_model.current_model,
+             current_model.teacher,
+             current_model.gradient,
+             current_model.error,
+             current_model.train,
+             parent=self)
+        self._model_teacher_widget.on_change_model = self._on_update_model
 
         self._neural_network_layout = QVBoxLayout(self)
         self._neural_network_layout.addWidget(self._chart_widget)
         self._neural_network_layout.addWidget(self._model_teacher_widget)
 
         self._init_charts()
+
+    def _on_update_model(self, model):
+        current_model = self._network_model.current_model
+        current_model.add_model(model)
 
     @staticmethod
     def _get_values(network, original_values, train_values):

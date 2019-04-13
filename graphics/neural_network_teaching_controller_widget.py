@@ -1,33 +1,40 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QComboBox, QSlider
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QSlider
 from graphics.neural_network_teaching_service import NeuralNetworkTeachingService
 
 __all__ = ['NeuralNetworkTeachingControllerWidget']
 
 
 class NeuralNetworkTeachingControllerWidget(QWidget):
-    def __init__(self, network_model, parent=None):
+    def __init__(self,
+                 model,
+                 teacher,
+                 gradient,
+                 error,
+                 train,
+                 parent=None):
         super(NeuralNetworkTeachingControllerWidget, self).__init__(parent)
-        self._network_model = network_model
-        for model in self._network_model.models:
-            model.subscribe_on_add_model(self._on_add_model)
+        self._current_model_index = 0
+        self._models = [model]
 
-        current_model = network_model.current_model
-        self._model_teaching_controller = NeuralNetworkTeachingService(
-             current_model.current_model,
-             current_model.teacher,
-             current_model.gradient,
-             current_model.error,
-             current_model.train
+        self._model_teaching_service = NeuralNetworkTeachingService(
+             model,
+             teacher,
+             gradient,
+             error,
+             train
         )
-        self._model_teaching_controller.stop_callback = self._stop
-        self._model_teaching_controller._on_update_model = self._on_update_model
+        self._model_teaching_service.stop_callback = self._stop
+        self._model_teaching_service._on_update_model = self.__on_update_model
+
+        self._on_change_model = None
 
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
         container.addLayout(self._init_teacher_history_ui())
 
         self._toggle_active_buttons(False)
+        self._model_teaching_service.start()
 
     def _init_teacher_controller_ui(self):
         self._teacher_controller_ui = QHBoxLayout()
@@ -36,7 +43,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._start_button.clicked.connect(self._start)
 
         self._stop_button = QPushButton("Stop")
-        self._stop_button.clicked.connect(self._model_teaching_controller.stop)
+        self._stop_button.clicked.connect(self._model_teaching_service.stop)
 
         self._iterations = 1000000
         self._iterations_line_edit = QLineEdit(str(self._iterations))
@@ -52,54 +59,48 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
     def _init_teacher_history_ui(self):
         self._teacher_history_ui = QHBoxLayout()
 
-        self._models_list = QComboBox()
-        items = [model.function_text for model in self._network_model.models]
-        self._models_list.addItems(items)
-        self._models_list.activated[str].connect(self._on_change_model)
-        self._models_list.setCurrentIndex(self._network_model.current_model_index)
-
         self._slider = QSlider(Qt.Horizontal)
         self._slider.setMinimum(0)
         self._slider.setMaximum(0)
         self._slider.setValue(0)
         self._slider.setTickPosition(QSlider.NoTicks)
         self._slider.setTickInterval(1)
-        self._slider.valueChanged[int].connect(self._on_change_network)
+        self._slider.valueChanged[int].connect(self.__on_change_model)
 
         self._reset_button = QPushButton("Reset")
-        self._reset_button.clicked.connect(self._reset)
+        self._reset_button.clicked.connect(self._reset_model_weights)
 
-        self._teacher_history_ui.addWidget(self._models_list)
         self._teacher_history_ui.addWidget(self._slider)
         self._teacher_history_ui.addWidget(self._reset_button)
 
         return self._teacher_history_ui
 
-    def _on_update_model(self, network):
-        network_model = self._network_model
-        current_model = network_model.current_model
-        current_model.add_model(network)
+    @property
+    def on_change_model(self):
+        return self._on_change_model
 
-    def _reset(self):
-        self._network_model.current_model.current_model.reset()
+    @on_change_model.setter
+    def on_change_model(self, on_change_model):
+        if not callable(on_change_model):
+            raise ValueError('on_update_model should be callable')
+        self._on_change_model = on_change_model
 
-    def _on_change_network(self, value):
-        network_model = self._network_model
-        current_model = network_model.current_model
-        current_model.current_model_index = value
+    def __on_update_model(self, model):
+        self._models += [model]
+        if self._on_change_model is not None:
+            self._on_change_model(model)
+        self._current_model_index = len(self._models) - 1
+        self._slider.setMaximum(self._current_model_index)
+        self._slider.setValue(self._current_model_index)
 
-    def _on_add_model(self, model):
-        network_model = self._network_model
-        current_model = network_model.current_model
-        self._slider.setMaximum(current_model.models_count - 1)
-        self._slider.setValue(current_model.models_count - 1)
+    def _reset_model_weights(self):
+        self._model.reset()
 
-    def _on_change_model(self, text):
-        network_model = self._network_model
-        model_index = self._models_list.currentIndex()
-        network_model.current_model_index = model_index
-        current_model = network_model.current_model
-        self._model_teaching_controller.network = current_model.current_model
+    def __on_change_model(self, value):
+        models = self._models
+        self._current_model_index = value
+        if self._on_change_model is not None:
+            self._on_change_model(models[value])
 
     def _on_change_iterations(self, text):
         iterations = 0
@@ -111,14 +112,13 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
 
     def _toggle_active_buttons(self, is_teaching):
         self._reset_button.setEnabled(not is_teaching)
-        self._models_list.setEnabled(not is_teaching)
         self._stop_button.setEnabled(is_teaching)
         self._start_button.setEnabled(not is_teaching)
         self._iterations_line_edit.setEnabled(not is_teaching)
 
     def _start(self):
         self._toggle_active_buttons(True)
-        controller = self._model_teaching_controller
+        controller = self._model_teaching_service
         controller.iterations = self._iterations
         controller.start()
 

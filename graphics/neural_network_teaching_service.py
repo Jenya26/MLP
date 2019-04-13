@@ -5,7 +5,7 @@ __all__ = ['NeuralNetworkTeachingService']
 
 class NeuralNetworkTeachingService(QThread):
     def __init__(self,
-                 network,
+                 model,
                  teacher,
                  gradient,
                  error,
@@ -15,7 +15,7 @@ class NeuralNetworkTeachingService(QThread):
                  iterations=1):
         QThread.__init__(self)
         self._teacher = teacher
-        self._network = network
+        self._network = model
         self._gradient = gradient
         self._error = error
         self._train_data_store = train_data_store
