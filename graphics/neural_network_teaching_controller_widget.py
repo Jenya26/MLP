@@ -51,7 +51,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._stop_button = QPushButton("Stop")
         self._stop_button.clicked.connect(self._model_teaching_service.stop)
 
-        self._iterations = 10000
+        self._iterations = 1000
         self._iterations_line_edit = QLineEdit(str(self._iterations))
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)

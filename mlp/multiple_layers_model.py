@@ -16,7 +16,7 @@ class MultipleLayersModel:
                 raise ValueError(
                     f'Output dimension({output_dimension}) not equals input dimension({input_dimension})'
                 )
-            self._layers = layers
+        self._layers = layers
         self._mutex = QMutex()
 
     @property
@@ -29,7 +29,8 @@ class MultipleLayersModel:
     def __call__(self, inputs):
         self._mutex.lock()
         outputs = inputs
-        for layer in self._layers:
+        layers = self._layers
+        for layer in layers:
             outputs = layer(outputs)
         self._mutex.unlock()
         return outputs
