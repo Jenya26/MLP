@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QThread
+from PyQt5.QtCore import QThread
 
 __all__ = ['NeuralNetworkTeachingService']
 

@@ -54,9 +54,9 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)
 
-        self._teacher_controller_ui.addWidget(self._iterations_line_edit)
-        self._teacher_controller_ui.addWidget(self._start_button)
-        self._teacher_controller_ui.addWidget(self._stop_button)
+        self._teacher_controller_ui.addWidget(self._iterations_line_edit, alignment=Qt.Alignment())
+        self._teacher_controller_ui.addWidget(self._start_button, alignment=Qt.Alignment())
+        self._teacher_controller_ui.addWidget(self._stop_button, alignment=Qt.Alignment())
 
         return self._teacher_controller_ui
 
@@ -78,9 +78,9 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._reset_button = QPushButton("Reset")
         self._reset_button.clicked.connect(self._reset_model_weights)
 
-        self._teacher_history_ui.addWidget(self._function_line_edit)
-        self._teacher_history_ui.addWidget(self._slider)
-        self._teacher_history_ui.addWidget(self._reset_button)
+        self._teacher_history_ui.addWidget(self._function_line_edit, alignment=Qt.Alignment())
+        self._teacher_history_ui.addWidget(self._slider, alignment=Qt.Alignment())
+        self._teacher_history_ui.addWidget(self._reset_button, alignment=Qt.Alignment())
 
         return self._teacher_history_ui
 

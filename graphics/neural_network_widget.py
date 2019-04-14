@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import QTimer, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 
 from graphics.neural_network_chart_widget import NeuralNetworkChartWidget
 from graphics.neural_network_teaching_controller_widget import NeuralNetworkTeachingControllerWidget
@@ -116,11 +116,11 @@ class NeuralNetworkWidget(QWidget):
         )
 
         self._neural_network_layout = QVBoxLayout()
-        self._neural_network_layout.addWidget(self._chart_widget)
-        self._neural_network_layout.addWidget(self._model_teaching_controller_widget)
+        self._neural_network_layout.addWidget(self._chart_widget, alignment=Qt.Alignment())
+        self._neural_network_layout.addWidget(self._model_teaching_controller_widget, alignment=Qt.AlignBottom)
 
         self._neural_network_row_layout = QHBoxLayout(self)
-        self._neural_network_row_layout.addWidget(self._neural_network_model_controller_widget)
+        self._neural_network_row_layout.addWidget(self._neural_network_model_controller_widget, alignment=Qt.AlignLeft)
         self._neural_network_row_layout.addLayout(self._neural_network_layout)
 
         self._update_all_charts()
