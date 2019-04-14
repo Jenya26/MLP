@@ -30,6 +30,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._model_teaching_service.start_callback = self.__start_callback
         self._model_teaching_service.stop_callback = self.__stop
         self._model_teaching_service._on_update_model = self.__on_update_model
+        self._learning_rate = learning_rate
 
         self._on_change_model = None
         self._on_change_function = None
@@ -69,6 +70,14 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._function_line_edit.setFixedWidth(120)
         self._function_line_edit.textChanged[str].connect(self.__on_change_function)
 
+        self._learning_rate_line_edit = QLineEdit(str(self._learning_rate))
+        self._learning_rate_line_edit.setFixedWidth(120)
+        self._learning_rate_line_edit.textChanged[str].connect(self.__on_change_learning_rate)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self._function_line_edit, alignment=Qt.AlignTop)
+        vbox.addWidget(self._learning_rate_line_edit, alignment=Qt.AlignTop)
+
         self._slider = QSlider(Qt.Horizontal)
         self._slider.setMinimum(0)
         self._slider.setMaximum(0)
@@ -80,7 +89,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._reset_button = QPushButton("Reset")
         self._reset_button.clicked.connect(self._reset_model_weights)
 
-        self._teacher_history_ui.addWidget(self._function_line_edit, alignment=Qt.Alignment())
+        self._teacher_history_ui.addLayout(vbox)
         self._teacher_history_ui.addWidget(self._slider, alignment=Qt.Alignment())
         self._teacher_history_ui.addWidget(self._reset_button, alignment=Qt.Alignment())
 
@@ -137,6 +146,33 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._iterations = iterations
         self._iterations_line_edit.setText(str(iterations))
 
+    def __on_change_learning_rate(self, text):
+        is_parsed = False
+        k = len(text)
+        learning_rate = 0.
+        while not is_parsed and k > 0:
+            is_parsed = True
+            try:
+                learning_rate = float(text[:k])
+            except ValueError:
+                is_parsed = False
+                k -= 1
+        if not is_parsed:
+            learning_rate = 0.
+        l = 0
+        value = learning_rate
+        while is_parsed and text[l] != '.' and value == learning_rate:
+            is_parsed = True
+            l += 1
+            try:
+                value = float(text[l:k])
+            except ValueError:
+                is_parsed = False
+        l -= 1
+        self._learning_rate = learning_rate
+        self._model_teaching_service.learning_rate = learning_rate
+        self._learning_rate_line_edit.setText(str(text[l:k]))
+
     def __on_change_function(self, text):
         if self._on_change_function is not None:
             self._on_change_function(text)
@@ -148,6 +184,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._iterations_line_edit.setEnabled(not is_teaching)
         self._function_line_edit.setEnabled(not is_teaching)
         self._slider.setEnabled(not is_teaching)
+        self._learning_rate_line_edit.setEnabled(not is_teaching)
 
     @property
     def on_start_teaching(self):
