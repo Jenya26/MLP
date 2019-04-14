@@ -21,6 +21,6 @@ class NeuralNetworkTabsWidget(QTabWidget):
                 tab['teacher'],
                 tab['gradient'],
                 tab['error'],
-                tab['train_data_store']
+                tab['learning_rate']
             )
             self.addTab(neural_network_widget, "name")

@@ -12,17 +12,19 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
                  gradient,
                  error,
                  train,
+                 learning_rate,
                  parent=None):
         super(NeuralNetworkTeachingControllerWidget, self).__init__(parent)
         self._current_model_index = 0
         self._models = [model]
 
         self._model_teaching_service = NeuralNetworkTeachingService(
-             model,
-             teacher,
-             gradient,
-             error,
-             train
+            model,
+            teacher,
+            gradient,
+            error,
+            train,
+            learning_rate=learning_rate
         )
         self._model_teaching_service.stop_callback = self._stop
         self._model_teaching_service._on_update_model = self.__on_update_model

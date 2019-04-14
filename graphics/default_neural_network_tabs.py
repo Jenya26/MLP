@@ -5,50 +5,20 @@ from mlp import MultipleLayersModel, Layer
 from gradients import Gradient
 from errors import SquareError
 from teacher import GradientTeacher
-from initializers import RangeInitializer, UniformInitializer, ConstInitializer
-from store import Store
 
 __all = ['tabs']
-
-zero_initializer = ConstInitializer(0.)
-range_initializer = RangeInitializer(-2., 2.)
-uniform_initializer = UniformInitializer(-.1, .1)
-
-ORIGINAL_POINTS_COUNT = 1000
-TRAIN_POINTS_COUNT = 10
-
-
-def noise(values):
-    x_delta = zero_initializer((values.shape[0], 1))
-    y_delta = uniform_initializer((values.shape[0], 1))
-    delta = np.concatenate((x_delta, y_delta), axis=1)
-    return values + delta
 
 
 def create_tab(function_text, model, learning_rate=1e-3):
     def function(x):
         return eval(function_text)
-    original_inputs = range_initializer((ORIGINAL_POINTS_COUNT, 1))
-    original_values = np.concatenate((original_inputs, function(original_inputs)), axis=1)
-    original_store = Store(original_values)
     return {
         'function': function,
-        'model': MultipleLayersModel([
-            Layer(
-                input_dimension=1,
-                output_dimension=1,
-                activation_function=LinearFunction()
-            ),
-            Layer(
-                input_dimension=1,
-                output_dimension=1,
-                activation_function=LinearFunction()
-            )
-        ]),
+        'model': model,
         'gradient': Gradient(),
         'error': SquareError(),
         'teacher': GradientTeacher(),
-        'train_data_store': Store(noise(original_store.next(TRAIN_POINTS_COUNT)))
+        'learning_rate': learning_rate
     }
 
 
