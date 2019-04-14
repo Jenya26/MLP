@@ -1,7 +1,17 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLineEdit, QLabel
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QComboBox
 from PyQt5.QtCore import Qt
 
+from functions import SigmoidFunction, LinearFunction
+
 __all__ = ['NeuralNetworkModelControllerWidget']
+
+
+def get_current_function_index(function):
+    if isinstance(function, LinearFunction):
+        return 0
+    if isinstance(function, SigmoidFunction):
+        return 1
+    return -1
 
 
 class NeuralNetworkModelControllerWidget(QWidget):
@@ -55,8 +65,14 @@ class NeuralNetworkModelControllerWidget(QWidget):
         line = QHBoxLayout()
         line.addWidget(label, alignment=Qt.AlignTop)
         line.addWidget(remove_layout_button, alignment=Qt.AlignTop)
+        activation_functions = QComboBox()
+        activation_functions.addItem("Linear function")
+        activation_functions.addItem("Sigmoid function")
+        activation_functions.setCurrentIndex(get_current_function_index(layer.activation_function))
+        activation_functions.currentIndexChanged.connect(self.__change_activation_function_maker(i))
         layout.addLayout(line)
         layout.addWidget(layer_count_line_edit, alignment=Qt.AlignTop)
+        layout.addWidget(activation_functions, alignment=Qt.AlignTop)
         return widget
 
     def __add_layer_info(self, i, layer, enabled=True):
@@ -73,10 +89,24 @@ class NeuralNetworkModelControllerWidget(QWidget):
             layer_count_line_edit = layer_count_line_edit_item.widget()
             layer_count_line_edit.setText(str(layer.output_dimension))
             layer_count_line_edit.setEnabled(enabled)
+            activation_function_item = widget_layout.itemAt(2)
+            activation_function = activation_function_item.widget()
+            activation_function.setCurrentIndex(get_current_function_index(layer.activation_function))
             widget.setVisible(True)
         else:
             widget = self.__create_new_layer(i, layer, enabled)
             self._layers_layout.addWidget(widget, alignment=Qt.AlignTop)
+
+    def __change_activation_function_maker(self, index):
+        def __change_activation_function(selected):
+            function = None
+            if selected == 0:
+                function = LinearFunction()
+            if selected == 1:
+                function = SigmoidFunction()
+            if function is not None:
+                self._model.change_activation_function(index, function)
+        return __change_activation_function
 
     def _remove_layout_maker(self, index):
         def _remove_layout():

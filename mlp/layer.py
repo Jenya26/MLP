@@ -69,6 +69,10 @@ class Layer:
     def activation_function(self):
         return self._activation_function
 
+    @activation_function.setter
+    def activation_function(self, activation_function):
+        self._activation_function = activation_function
+
     @property
     def weights(self):
         return self._weights

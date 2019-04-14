@@ -146,6 +146,8 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._stop_button.setEnabled(is_teaching)
         self._start_button.setEnabled(not is_teaching)
         self._iterations_line_edit.setEnabled(not is_teaching)
+        self._function_line_edit.setEnabled(not is_teaching)
+        self._slider.setEnabled(not is_teaching)
 
     @property
     def on_start_teaching(self):

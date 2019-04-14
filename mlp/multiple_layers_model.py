@@ -86,3 +86,8 @@ class MultipleLayersModel:
         if index + 1 < len(layers):
             layers[index + 1].input_dimension = layer_count
         self._mutex.unlock()
+
+    def change_activation_function(self, index, function):
+        self._mutex.lock()
+        self._layers[index].activation_function = function
+        self._mutex.unlock()
