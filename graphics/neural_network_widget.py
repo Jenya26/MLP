@@ -42,6 +42,8 @@ class NeuralNetworkWidget(QWidget):
         self._error = error
         self._learning_rate = learning_rate
 
+        self._on_change_function = None
+
         self._create_function()
 
         original_inputs = range_initializer((ORIGINAL_POINTS_COUNT, 1))
@@ -64,6 +66,24 @@ class NeuralNetworkWidget(QWidget):
                 return 0. * x
         self._function = function
 
+    @property
+    def on_change_function(self):
+        return self._on_change_function
+
+    @on_change_function.setter
+    def on_change_function(self, on_change_function):
+        if not callable(on_change_function):
+            raise ValueError('on_change_function should be callable')
+        self._on_change_function = on_change_function
+
+    def __on_change_function(self, function_code):
+        self._function_code = function_code
+        self._create_function()
+        self._reset_train_data_store()
+        self._update_all_charts()
+        if self._on_change_function is not None:
+            self._on_change_function(function_code)
+
     def _reset_train_data_store(self):
         original_values = self._original_store.next(TRAIN_POINTS_COUNT)
         train_values = noise(original_values)
@@ -71,7 +91,8 @@ class NeuralNetworkWidget(QWidget):
 
     def _init_ui(self):
         self._chart_widget = NeuralNetworkChartWidget(self._function_code)
-        self._model_teacher_widget = NeuralNetworkTeachingControllerWidget(
+        self._model_teaching_controller_widget = NeuralNetworkTeachingControllerWidget(
+            self._function_code,
             self._model,
             self._teacher,
             self._gradient,
@@ -79,18 +100,19 @@ class NeuralNetworkWidget(QWidget):
             self._train_data_store,
             self._learning_rate,
             parent=self)
-        self._model_teacher_widget.on_change_model = self._on_update_model
+        self._model_teaching_controller_widget.on_change_model = self._on_update_model
+        self._model_teaching_controller_widget.on_change_function = self.__on_change_function
 
         self._neural_network_layout = QVBoxLayout(self)
         self._neural_network_layout.addWidget(self._chart_widget)
-        self._neural_network_layout.addWidget(self._model_teacher_widget)
+        self._neural_network_layout.addWidget(self._model_teaching_controller_widget)
 
-        self._init_charts()
+        self._update_all_charts()
 
     def _on_update_model(self, model):
         self._model = model
 
-    def _init_charts(self):
+    def _update_all_charts(self):
         self._chart_widget.original_function = self._function
         self._chart_widget.train_points = self._train_data_store.values
         self._chart_widget.network_model = self._model

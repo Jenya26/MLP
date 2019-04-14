@@ -7,6 +7,7 @@ __all__ = ['NeuralNetworkTeachingControllerWidget']
 
 class NeuralNetworkTeachingControllerWidget(QWidget):
     def __init__(self,
+                 function_code,
                  model,
                  teacher,
                  gradient,
@@ -30,10 +31,11 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._model_teaching_service._on_update_model = self.__on_update_model
 
         self._on_change_model = None
+        self._on_change_function = None
 
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
-        container.addLayout(self._init_teacher_history_ui())
+        container.addLayout(self._init_teacher_history_ui(function_code))
 
         self._toggle_active_buttons(False)
         self._model_teaching_service.start()
@@ -47,7 +49,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._stop_button = QPushButton("Stop")
         self._stop_button.clicked.connect(self._model_teaching_service.stop)
 
-        self._iterations = 1000000
+        self._iterations = 10000
         self._iterations_line_edit = QLineEdit(str(self._iterations))
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)
@@ -58,8 +60,12 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
 
         return self._teacher_controller_ui
 
-    def _init_teacher_history_ui(self):
+    def _init_teacher_history_ui(self, function_code):
         self._teacher_history_ui = QHBoxLayout()
+
+        self._function_line_edit = QLineEdit(function_code)
+        self._function_line_edit.setFixedWidth(120)
+        self._function_line_edit.textChanged[str].connect(self.__on_change_function)
 
         self._slider = QSlider(Qt.Horizontal)
         self._slider.setMinimum(0)
@@ -72,6 +78,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._reset_button = QPushButton("Reset")
         self._reset_button.clicked.connect(self._reset_model_weights)
 
+        self._teacher_history_ui.addWidget(self._function_line_edit)
         self._teacher_history_ui.addWidget(self._slider)
         self._teacher_history_ui.addWidget(self._reset_button)
 
@@ -86,6 +93,16 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         if not callable(on_change_model):
             raise ValueError('on_update_model should be callable')
         self._on_change_model = on_change_model
+
+    @property
+    def on_change_function(self):
+        return self._on_change_function
+
+    @on_change_function.setter
+    def on_change_function(self, on_change_function):
+        if not callable(on_change_function):
+            raise ValueError('on_change_function should be callable')
+        self._on_change_function = on_change_function
 
     def __on_update_model(self, model):
         self._models += [model]
@@ -111,6 +128,10 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
                 iterations = 10 * iterations + ord(ch) - ord('0')
         self._iterations = iterations
         self._iterations_line_edit.setText(str(iterations))
+
+    def __on_change_function(self, text):
+        if self._on_change_function is not None:
+            self._on_change_function(text)
 
     def _toggle_active_buttons(self, is_teaching):
         self._reset_button.setEnabled(not is_teaching)

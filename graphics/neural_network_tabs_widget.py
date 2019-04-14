@@ -20,3 +20,8 @@ class NeuralNetworkTabsWidget(QTabWidget):
                 tab['learning_rate']
             )
             self.addTab(neural_network_widget, tab['function'])
+            neural_network_widget.on_change_function = self.__on_change_function
+
+    def __on_change_function(self, function_code):
+        current_index = self.currentIndex()
+        self.setTabText(current_index, function_code)
