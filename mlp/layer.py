@@ -26,9 +26,44 @@ class Layer:
     def input_dimension(self):
         return self._input_dimension
 
+    def __add_inputs(self, count):
+        self._input_dimension += count
+        new_weights = self._weights_initializer((count, self._output_dimension))
+        self._weights = np.concatenate([self._weights, new_weights], axis=0)
+
+    def __remove_inputs(self, count):
+        self._input_dimension -= count
+        self._weights = self._weights[:self._input_dimension, :]
+
+    @input_dimension.setter
+    def input_dimension(self, input_dimension):
+        if self._input_dimension < input_dimension:
+            self.__add_inputs(input_dimension - self._input_dimension)
+        else:
+            self.__remove_inputs(self._input_dimension - input_dimension)
+
     @property
     def output_dimension(self):
         return self._output_dimension
+
+    def __add_neurons(self, count):
+        self._output_dimension += count
+        new_weights = self._weights_initializer((self._input_dimension, count))
+        new_biases = self._biases_initializer(count)
+        self._weights = np.concatenate([self._weights, new_weights], axis=1)
+        self._biases = np.concatenate([self._biases, new_biases])
+
+    def __remove_neurons(self, count):
+        self._output_dimension -= count
+        self._weights = self._weights[:,:self._output_dimension]
+        self._biases = self._biases[:self._output_dimension]
+
+    @output_dimension.setter
+    def output_dimension(self, output_dimension):
+        if self._output_dimension < output_dimension:
+            self.__add_neurons(output_dimension - self._output_dimension)
+        else:
+            self.__remove_neurons(self._output_dimension - output_dimension)
 
     @property
     def activation_function(self):
