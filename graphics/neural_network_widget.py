@@ -12,7 +12,7 @@ from store import Store
 
 __all__ = ['NeuralNetworkWidget']
 
-CHART_UPDATE_INTERVAL = 100
+CHART_UPDATE_INTERVAL = 1
 ORIGINAL_POINTS_COUNT = 1000
 TRAIN_POINTS_COUNT = 10
 
@@ -135,9 +135,12 @@ class NeuralNetworkWidget(QWidget):
         self._last_update_model_time = current_time
         self.__update_model_chart()
 
-    def _on_update_model(self, model):
+    def __change_current_model(self, model):
         self._model = model
         # self._update_model()
+
+    def _on_update_model(self, model):
+        self.__change_current_model(model)
 
     def _update_all_charts(self):
         self._chart_widget.original_function = self._function
@@ -145,8 +148,7 @@ class NeuralNetworkWidget(QWidget):
         self._chart_widget.network_model = self._model
 
     def __on_stop_teaching(self, iterations, model):
-        self._model = model
-        # self._update_model()
+        self._neural_network_model_controller_widget.model = model
 
     @pyqtSlot()
     def __update_model_chart(self):
