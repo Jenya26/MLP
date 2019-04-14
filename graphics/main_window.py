@@ -16,7 +16,15 @@ WINDOW_TITLE = "Function approximation via neural network"
 class NeuralNetworkWindow(QMainWindow):
     def __init__(self, network_model, parent=None):
         super(NeuralNetworkWindow, self).__init__(parent=parent)
-        self._neural_network_widget = NeuralNetworkWidget(network_model, parent)
+        current_model = network_model.current_model
+        self._neural_network_widget = NeuralNetworkWidget(
+            current_model.function,
+            current_model.current_model,
+            current_model.teacher,
+            current_model.gradient,
+            current_model.error,
+            current_model.train
+        )
         self.setCentralWidget(self._neural_network_widget)
 
 
