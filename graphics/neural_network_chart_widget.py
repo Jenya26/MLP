@@ -138,10 +138,11 @@ class NeuralNetworkChartWidget(QChartView):
     @network_model.setter
     def network_model(self, network_model):
         self._network_model = network_model
+        y_data = self._network_model(self._x_range)
         update_series(
             self._network_line_series,
             self._x_range,
-            self._network_model(self._x_range)
+            y_data
         )
 
     @property

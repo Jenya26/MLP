@@ -27,24 +27,24 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
             train,
             learning_rate=learning_rate
         )
-        self._model_teaching_service.stop_callback = self._stop
+        self._model_teaching_service.stop_callback = self.__stop
         self._model_teaching_service._on_update_model = self.__on_update_model
 
         self._on_change_model = None
         self._on_change_function = None
+        self._on_stop_teaching = None
 
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
         container.addLayout(self._init_teacher_history_ui(function_code))
 
         self._toggle_active_buttons(False)
-        self._model_teaching_service.start()
 
     def _init_teacher_controller_ui(self):
         self._teacher_controller_ui = QHBoxLayout()
 
         self._start_button = QPushButton("Start")
-        self._start_button.clicked.connect(self._start)
+        self._start_button.clicked.connect(self.start)
 
         self._stop_button = QPushButton("Stop")
         self._stop_button.clicked.connect(self._model_teaching_service.stop)
@@ -139,11 +139,25 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._start_button.setEnabled(not is_teaching)
         self._iterations_line_edit.setEnabled(not is_teaching)
 
-    def _start(self):
+    def start(self, iterations=None):
+        if type(iterations) is not int:
+            iterations = self._iterations
         self._toggle_active_buttons(True)
-        controller = self._model_teaching_service
-        controller.iterations = self._iterations
-        controller.start()
+        service = self._model_teaching_service
+        service.iterations = iterations
+        service.start()
 
-    def _stop(self, iterations):
+    @property
+    def on_stop_teaching(self):
+        return self._on_stop_teaching
+
+    @on_stop_teaching.setter
+    def on_stop_teaching(self, on_stop_teaching):
+        if not callable(on_stop_teaching):
+            raise ValueError('on_stop_teaching should be callable')
+        self._on_stop_teaching = on_stop_teaching
+
+    def __stop(self, iterations, model):
         self._toggle_active_buttons(False)
+        if self._on_stop_teaching is not None:
+            self._on_stop_teaching(iterations, model)

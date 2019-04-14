@@ -15,7 +15,7 @@ class NeuralNetworkTeachingService(QThread):
                  iterations=1):
         QThread.__init__(self)
         self._teacher = teacher
-        self._network = model
+        self._model = model
         self._gradient = gradient
         self._error = error
         self._train_data_store = train_data_store
@@ -31,11 +31,11 @@ class NeuralNetworkTeachingService(QThread):
 
     @property
     def network(self):
-        return self._network
+        return self._model
 
     @network.setter
     def network(self, network):
-        self._network = network
+        self._model = network
 
     @property
     def gradient(self):
@@ -112,10 +112,11 @@ class NeuralNetworkTeachingService(QThread):
 
     def run(self):
         self._is_stop = False
+        model = self._model
         while self._iterations > 0 and not self._is_stop:
-            network = self._network.copy()
+            model = model.copy()
             self._teacher(
-                network=network,
+                network=model,
                 gradient=self._gradient,
                 error=self._error,
                 data_store=self._train_data_store,
@@ -123,9 +124,9 @@ class NeuralNetworkTeachingService(QThread):
                 batch=self._batch,
                 learning_rate=self._learning_rate
             )
-            self._network = network
+            self._model = model
             if self._on_update_model is not None:
-                self._on_update_model(network)
+                self._on_update_model(model)
             self._iterations -= 1
         if self._stop_callback is not None:
-            self._stop_callback(self._iterations)
+            self._stop_callback(self._iterations, model)

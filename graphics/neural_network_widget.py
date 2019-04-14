@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import QTimer, pyqtSlot
@@ -10,7 +12,7 @@ from store import Store
 
 __all__ = ['NeuralNetworkWidget']
 
-CHART_UPDATE_INTERVAL = 200
+CHART_UPDATE_INTERVAL = 100
 ORIGINAL_POINTS_COUNT = 1000
 TRAIN_POINTS_COUNT = 10
 
@@ -51,12 +53,16 @@ class NeuralNetworkWidget(QWidget):
         original_values = np.concatenate((original_inputs, self._function(original_inputs)), axis=1)
         self._original_store = Store(original_values)
 
+        self._last_update_model_time = time.time()
+
         self._reset_train_data_store()
         self._init_ui()
 
-        self._timer = QTimer(self)
+        self._model_teaching_controller_widget.start(1)
+
+        self._timer = QTimer()
         self._timer.setInterval(CHART_UPDATE_INTERVAL)
-        self._timer.timeout.connect(self.update_network_chart)
+        self._timer.timeout.connect(self.__update_model_chart)
         self._timer.start()
 
     def _create_function(self):
@@ -102,6 +108,7 @@ class NeuralNetworkWidget(QWidget):
             self._learning_rate,
             parent=self)
         self._model_teaching_controller_widget.on_change_model = self._on_update_model
+        self._model_teaching_controller_widget.on_stop_teaching = self.__on_stop_teaching
         self._model_teaching_controller_widget.on_change_function = self.__on_change_function
 
         self._neural_network_model_controller_widget = NeuralNetworkModelControllerWidget(
@@ -118,14 +125,29 @@ class NeuralNetworkWidget(QWidget):
 
         self._update_all_charts()
 
+    def _update_model(self):
+        current_time = time.time()
+        delta_time = 1000. * (current_time - self._last_update_model_time)
+        while delta_time <= CHART_UPDATE_INTERVAL:
+            time.sleep((CHART_UPDATE_INTERVAL - delta_time) / 1000.)
+            current_time = time.time()
+            delta_time = 1000. * (current_time - self._last_update_model_time)
+        self._last_update_model_time = current_time
+        self.__update_model_chart()
+
     def _on_update_model(self, model):
         self._model = model
+        # self._update_model()
 
     def _update_all_charts(self):
         self._chart_widget.original_function = self._function
         self._chart_widget.train_points = self._train_data_store.values
         self._chart_widget.network_model = self._model
 
+    def __on_stop_teaching(self, iterations, model):
+        self._model = model
+        # self._update_model()
+
     @pyqtSlot()
-    def update_network_chart(self):
+    def __update_model_chart(self):
         self._chart_widget.network_model = self._model
