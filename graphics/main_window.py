@@ -1,10 +1,9 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
-
-from models import NetworkModel
-from graphics.neural_network_widget import NeuralNetworkWidget
+from graphics.default_neural_network_tabs import tabs
+from graphics.neural_network_tabs_widget import NeuralNetworkTabsWidget
 
 __all__ = ['NeuralNetworkWindow']
 
@@ -14,24 +13,16 @@ WINDOW_TITLE = "Function approximation via neural network"
 
 
 class NeuralNetworkWindow(QMainWindow):
-    def __init__(self, network_model, parent=None):
+    def __init__(self, parent=None):
         super(NeuralNetworkWindow, self).__init__(parent=parent)
-        current_model = network_model.current_model
-        self._neural_network_widget = NeuralNetworkWidget(
-            current_model.function,
-            current_model.current_model,
-            current_model.teacher,
-            current_model.gradient,
-            current_model.error,
-            current_model.train
-        )
-        self.setCentralWidget(self._neural_network_widget)
+        self._neural_network_tabs_widget = NeuralNetworkTabsWidget(tabs)
+        self.setCentralWidget(self._neural_network_tabs_widget)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    window = NeuralNetworkWindow(NetworkModel())
+    window = NeuralNetworkWindow()
     window.setWindowTitle(WINDOW_TITLE)
     window.show()
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT)
