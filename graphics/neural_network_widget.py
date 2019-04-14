@@ -9,7 +9,6 @@ from store import Store
 
 __all__ = ['NeuralNetworkWidget']
 
-CHART_TITLE = "Neural network"
 CHART_UPDATE_INTERVAL = 200
 ORIGINAL_POINTS_COUNT = 1000
 TRAIN_POINTS_COUNT = 10
@@ -28,7 +27,7 @@ def noise(values):
 
 class NeuralNetworkWidget(QWidget):
     def __init__(self,
-                 function,
+                 function_code,
                  model,
                  teacher,
                  gradient,
@@ -36,15 +35,17 @@ class NeuralNetworkWidget(QWidget):
                  learning_rate,
                  parent=None):
         super(NeuralNetworkWidget, self).__init__(parent=parent)
-        self._function = function
+        self._function_code = function_code
         self._model = model
         self._teacher = teacher
         self._gradient = gradient
         self._error = error
         self._learning_rate = learning_rate
 
+        self._create_function()
+
         original_inputs = range_initializer((ORIGINAL_POINTS_COUNT, 1))
-        original_values = np.concatenate((original_inputs, function(original_inputs)), axis=1)
+        original_values = np.concatenate((original_inputs, self._function(original_inputs)), axis=1)
         self._original_store = Store(original_values)
 
         self._reset_train_data_store()
@@ -55,13 +56,21 @@ class NeuralNetworkWidget(QWidget):
         self._timer.timeout.connect(self.update_network_chart)
         self._timer.start()
 
+    def _create_function(self):
+        def function(x):
+            try:
+                return eval(self._function_code)
+            except:
+                return 0. * x
+        self._function = function
+
     def _reset_train_data_store(self):
         original_values = self._original_store.next(TRAIN_POINTS_COUNT)
         train_values = noise(original_values)
         self._train_data_store = Store(train_values)
 
     def _init_ui(self):
-        self._chart_widget = NeuralNetworkChartWidget(CHART_TITLE)
+        self._chart_widget = NeuralNetworkChartWidget(self._function_code)
         self._model_teacher_widget = NeuralNetworkTeachingControllerWidget(
             self._model,
             self._teacher,

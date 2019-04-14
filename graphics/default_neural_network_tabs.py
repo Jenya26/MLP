@@ -1,5 +1,3 @@
-import numpy as np
-
 from functions import LinearFunction
 from mlp import MultipleLayersModel, Layer
 from gradients import Gradient
@@ -10,10 +8,8 @@ __all = ['tabs']
 
 
 def create_tab(function_text, model, learning_rate=1e-3):
-    def function(x):
-        return eval(function_text)
     return {
-        'function': function,
+        'function': function_text,
         'model': model,
         'gradient': Gradient(),
         'error': SquareError(),
