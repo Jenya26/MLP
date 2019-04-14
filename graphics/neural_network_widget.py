@@ -58,12 +58,12 @@ class NeuralNetworkWidget(QWidget):
         self._reset_train_data_store()
         self._init_ui()
 
-        self._model_teaching_controller_widget.start(1)
-
         self._timer = QTimer()
         self._timer.setInterval(CHART_UPDATE_INTERVAL)
         self._timer.timeout.connect(self.__update_model_chart)
-        self._timer.start()
+        # self._timer.start()
+
+        self._model_teaching_controller_widget.start(1)
 
     def _create_function(self):
         def function(x):
@@ -108,6 +108,7 @@ class NeuralNetworkWidget(QWidget):
             self._learning_rate,
             parent=self)
         self._model_teaching_controller_widget.on_change_model = self._on_update_model
+        self._model_teaching_controller_widget.on_start_teaching = self.__on_start_teaching
         self._model_teaching_controller_widget.on_stop_teaching = self.__on_stop_teaching
         self._model_teaching_controller_widget.on_change_function = self.__on_change_function
 
@@ -137,6 +138,9 @@ class NeuralNetworkWidget(QWidget):
 
     def __change_current_model(self, model):
         self._model = model
+        if self._neural_network_model_controller_widget.isEnabled():
+            self.__update_model_chart()
+            self._neural_network_model_controller_widget.model = model
         # self._update_model()
 
     def _on_update_model(self, model):
@@ -147,9 +151,14 @@ class NeuralNetworkWidget(QWidget):
         self._chart_widget.train_points = self._train_data_store.values
         self._chart_widget.network_model = self._model
 
-    def __on_stop_teaching(self, iterations, model):
-        self._neural_network_model_controller_widget.model = model
+    def __on_start_teaching(self):
+        self._timer.start()
+        self._neural_network_model_controller_widget.setEnabled(False)
 
-    @pyqtSlot()
+    def __on_stop_teaching(self, iterations, model):
+        self._timer.stop()
+        self._neural_network_model_controller_widget.setEnabled(True)
+
+    @pyqtSlot(name="Update chart")
     def __update_model_chart(self):
         self._chart_widget.network_model = self._model

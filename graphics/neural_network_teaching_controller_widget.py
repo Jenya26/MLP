@@ -33,6 +33,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._on_change_model = None
         self._on_change_function = None
         self._on_stop_teaching = None
+        self._on_start_teaching = None
 
         container = QVBoxLayout(self)
         container.addLayout(self._init_teacher_controller_ui())
@@ -139,6 +140,16 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._start_button.setEnabled(not is_teaching)
         self._iterations_line_edit.setEnabled(not is_teaching)
 
+    @property
+    def on_start_teaching(self):
+        return self._on_start_teaching
+
+    @on_start_teaching.setter
+    def on_start_teaching(self, on_start_teaching):
+        if not callable(on_start_teaching):
+            raise ValueError('on_start_teaching should be callable')
+        self._on_start_teaching = on_start_teaching
+
     def start(self, iterations=None):
         if type(iterations) is not int:
             iterations = self._iterations
@@ -146,6 +157,8 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         service = self._model_teaching_service
         service.iterations = iterations
         service.start()
+        if self._on_start_teaching is not None:
+            self._on_start_teaching()
 
     @property
     def on_stop_teaching(self):
