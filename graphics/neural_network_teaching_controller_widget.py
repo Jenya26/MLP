@@ -27,6 +27,7 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
             train,
             learning_rate=learning_rate
         )
+        self._model_teaching_service.start_callback = self.__start_callback
         self._model_teaching_service.stop_callback = self.__stop
         self._model_teaching_service._on_update_model = self.__on_update_model
 
@@ -113,8 +114,14 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._slider.setMaximum(self._current_model_index)
         self._slider.setValue(self._current_model_index)
 
+    @property
+    def current_model(self):
+        index = self._current_model_index
+        return self._models[index]
+
     def _reset_model_weights(self):
-        self._model.reset()
+        model = self.current_model
+        model.reset()
 
     def __on_change_model(self, value):
         models = self._models
@@ -150,6 +157,10 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
             raise ValueError('on_start_teaching should be callable')
         self._on_start_teaching = on_start_teaching
 
+    def __start_callback(self):
+        if self._on_start_teaching is not None:
+            self._on_start_teaching()
+
     def start(self, iterations=None):
         if type(iterations) is not int:
             iterations = self._iterations
@@ -157,8 +168,6 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         service = self._model_teaching_service
         service.iterations = iterations
         service.start()
-        if self._on_start_teaching is not None:
-            self._on_start_teaching()
 
     @property
     def on_stop_teaching(self):

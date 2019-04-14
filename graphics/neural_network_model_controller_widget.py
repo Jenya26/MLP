@@ -96,10 +96,6 @@ class NeuralNetworkModelControllerWidget(QWidget):
                 if ord('0') <= ord(ch) <= ord('9'):
                     layer_count = 10 * layer_count + ord(ch) - ord('0')
             layer_count_line_edit.setText(str(layer_count))
-            layers = self._model.layers
             layer_count = max(layer_count, 1)
-            if index < len(layers):
-                layers[index].output_dimension = layer_count
-            if index + 2 < len(layers):
-                layers[index + 1].input_dimension = layer_count
+            self._model.change_layer_count(index, layer_count)
         return __on_change_layer_count

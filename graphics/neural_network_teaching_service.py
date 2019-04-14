@@ -23,6 +23,7 @@ class NeuralNetworkTeachingService(QThread):
         self._learning_rate = learning_rate
         self._iterations = iterations
         self._on_update_model = None
+        self._start_callback = None
         self._stop_callback = None
         self._is_stop = False
 
@@ -96,6 +97,16 @@ class NeuralNetworkTeachingService(QThread):
         self._on_update_model = on_update_model
 
     @property
+    def start_callback(self):
+        return self._start_callback
+
+    @start_callback.setter
+    def start_callback(self, start_callback):
+        if not callable(start_callback):
+            raise ValueError('Stop callback should be callable')
+        self._start_callback = start_callback
+
+    @property
     def stop_callback(self):
         return self._stop_callback
 
@@ -111,6 +122,8 @@ class NeuralNetworkTeachingService(QThread):
             self._stop_callback = stop_callback
 
     def run(self):
+        if self._start_callback is not None:
+            self._start_callback()
         self._is_stop = False
         model = self._model
         while self._iterations > 0 and not self._is_stop:

@@ -61,7 +61,7 @@ class NeuralNetworkWidget(QWidget):
         self._timer = QTimer()
         self._timer.setInterval(CHART_UPDATE_INTERVAL)
         self._timer.timeout.connect(self.__update_model_chart)
-        # self._timer.start()
+        self._timer.start()
 
         self._model_teaching_controller_widget.start(1)
 
@@ -152,11 +152,9 @@ class NeuralNetworkWidget(QWidget):
         self._chart_widget.network_model = self._model
 
     def __on_start_teaching(self):
-        self._timer.start()
         self._neural_network_model_controller_widget.setEnabled(False)
 
     def __on_stop_teaching(self, iterations, model):
-        self._timer.stop()
         self._neural_network_model_controller_widget.setEnabled(True)
 
     @pyqtSlot(name="Update chart")

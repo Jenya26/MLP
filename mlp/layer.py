@@ -127,7 +127,8 @@ class Layer:
 
         """
         inputs = Layer._normalize_inputs(inputs)
-        outputs = inputs.dot(self._weights) + self._biases
+        outputs = inputs.dot(self._weights)
+        outputs += self._biases
         return self._activation_function(outputs)
 
     def update(self, delta):
