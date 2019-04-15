@@ -129,7 +129,7 @@ class NeuralNetworkTeachingService(QThread):
         while self._iterations > 0 and not self._is_stop:
             model = model.copy()
             self._teacher(
-                network=model,
+                model=model,
                 gradient=self._gradient,
                 error=self._error,
                 data_store=self._train_data_store,

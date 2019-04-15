@@ -20,8 +20,8 @@ class Gradient:
         return vectors
 
     @staticmethod
-    def _calculate_layer_gradient(gradient, layer, inputs, outputs, output_gradient):
-        activation_function_gradient = output_gradient * layer.activation_function.derivative(inputs, outputs)
+    def _calculate_layer_gradient(gradient, layer, inputs, outputs, outputs_gradient):
+        activation_function_gradient = outputs_gradient * layer.activation_function.derivative(inputs, outputs)
         weights_gradient = np.zeros((layer.input_dimension, layer.output_dimension))
         for i in range(inputs.shape[0]):
             current_input = inputs[i].reshape((layer.input_dimension, 1))
@@ -34,18 +34,19 @@ class Gradient:
         ]]
         return activation_function_gradient.dot(layer.weights.T)
 
-    def __call__(self, network, inputs, outputs, output_gradient):
+    def __call__(self, network, inputs, outputs, error):
         inputs = Gradient._normalize_vectors(inputs)
         outputs = Gradient._normalize_vectors(outputs)
         layer_inputs, layer_outputs = Gradient._forward(network, inputs, outputs)
+        outputs_gradient = error(outputs, layer_outputs[-1], 1)
 
         gradient = []
         for i, layer in enumerate(network.layers[::-1]):
-            output_gradient = Gradient._calculate_layer_gradient(
+            outputs_gradient = Gradient._calculate_layer_gradient(
                 gradient,
                 layer,
                 layer_inputs[-1 - i],
                 layer_outputs[-1 - i],
-                output_gradient
+                outputs_gradient
             )
         return np.asarray(gradient[::-1])

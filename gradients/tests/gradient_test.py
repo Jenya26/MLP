@@ -52,7 +52,7 @@ def should_success_calculate_for_multiple_examples():
                    [2.]])
     gradient = Gradient()
     square_error = SquareError()
-    network_gradient = gradient(network, X, Y, square_error(Y, network(X), 1))
+    network_gradient = gradient(network, X, Y, square_error)
     expected = np.asarray([
         [
             np.asarray([
@@ -115,7 +115,7 @@ def should_success_calculate_for_multiple_neurons():
                    [2.]])
     gradient = Gradient()
     square_error = SquareError()
-    network_gradient = gradient(network, X, Y, square_error(Y, network(X), 1))
+    network_gradient = gradient(network, X, Y, square_error)
     expected = np.asarray([
         [
             np.asarray([

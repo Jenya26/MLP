@@ -12,7 +12,7 @@ from store import Store
 
 __all__ = ['NeuralNetworkWidget']
 
-CHART_UPDATE_INTERVAL = 1
+CHART_UPDATE_INTERVAL = 100
 ORIGINAL_POINTS_COUNT = 1000
 TRAIN_POINTS_COUNT = 10
 
