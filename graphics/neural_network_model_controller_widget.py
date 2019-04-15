@@ -24,7 +24,7 @@ class NeuralNetworkModelControllerWidget(QWidget):
         self._layers_layout = QVBoxLayout()
 
         self.__update_layers_info()
-        add_layout_button = QPushButton("Add new layout")
+        add_layout_button = QPushButton("Add new layer")
         add_layout_button.clicked.connect(self._add_layer)
         self._layout.addLayout(self._layers_layout, 1)
         self._layout.addWidget(add_layout_button, alignment=Qt.AlignBottom)
