@@ -1,6 +1,9 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QSlider
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QSlider, QComboBox
 from graphics.neural_network_teaching_service import NeuralNetworkTeachingService
+
+from gradients import Gradient
+from gradients import ApproximateGradient
 
 __all__ = ['NeuralNetworkTeachingControllerWidget']
 
@@ -38,12 +41,12 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._on_start_teaching = None
 
         container = QVBoxLayout(self)
-        container.addLayout(self._init_teacher_controller_ui())
+        container.addLayout(self._init_teacher_controller_ui(gradient))
         container.addLayout(self._init_teacher_history_ui(function_code))
 
         self._toggle_active_buttons(False)
 
-    def _init_teacher_controller_ui(self):
+    def _init_teacher_controller_ui(self, gradient):
         self._teacher_controller_ui = QHBoxLayout()
 
         self._start_button = QPushButton("Start")
@@ -57,7 +60,19 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         self._iterations_line_edit.setFixedWidth(120)
         self._iterations_line_edit.textChanged[str].connect(self._on_change_iterations)
 
-        self._teacher_controller_ui.addWidget(self._iterations_line_edit, alignment=Qt.Alignment())
+        self._gradient_strategy_combo_box = QComboBox()
+        self._gradient_strategy_combo_box.addItem("Gradient")
+        self._gradient_strategy_combo_box.addItem("Approximate gradient")
+        self._gradient_strategy_combo_box.setCurrentIndex(
+            self.__get_current_gradient_strategy_index(gradient)
+        )
+        self._gradient_strategy_combo_box.currentIndexChanged.connect(self.__change_gradient_strategy_index)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self._iterations_line_edit, alignment=Qt.Alignment())
+        vbox.addWidget(self._gradient_strategy_combo_box, alignment=Qt.Alignment())
+
+        self._teacher_controller_ui.addLayout(vbox)
         self._teacher_controller_ui.addWidget(self._start_button, alignment=Qt.Alignment())
         self._teacher_controller_ui.addWidget(self._stop_button, alignment=Qt.Alignment())
 
@@ -114,6 +129,22 @@ class NeuralNetworkTeachingControllerWidget(QWidget):
         if not callable(on_change_function):
             raise ValueError('on_change_function should be callable')
         self._on_change_function = on_change_function
+
+    def __get_current_gradient_strategy_index(self, gradient):
+        if type(gradient) == Gradient:
+            return 0
+        if type(gradient) == ApproximateGradient:
+            return 1
+        return -1
+
+    def __change_gradient_strategy_index(self, selected):
+        gradient = None
+        if selected == 0:
+            gradient = Gradient()
+        if selected == 1:
+            gradient = ApproximateGradient()
+        if gradient is not None:
+            self._model_teaching_service.gradient = gradient
 
     def __on_update_model(self, model):
         self._models += [model]
