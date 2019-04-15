@@ -91,3 +91,10 @@ class MultipleLayersModel:
         self._mutex.lock()
         self._layers[index].activation_function = function
         self._mutex.unlock()
+
+    def lock_layers(self):
+        self._mutex.lock()
+        return self._layers
+
+    def unlock(self):
+        self._mutex.unlock()
